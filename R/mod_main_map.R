@@ -25,45 +25,53 @@ mod_main_map_ui <- function(id){
     tagList(
       sidebarLayout(
                  sidebarPanel(
+
+
+
                    width = 4,
-                   style = "background-color: white;",
+                   style = "background-color: white;
+                            margin-top: -20px;
+                            margin-bottom:0px;",
                    # tags$strong(tags$em(tags$h6("Select the variables using the dropdown menu below for the maps"))),
                   shiny::selectInput(ns("description"),
                                        "Select Variable: ",
                                        choices = unique(adm2_data$description)),
 
-                   # br(),
                   shiny::numericInput(ns("bins"),
-                                       label = "Choose number of Bins",
-                                       min = 3,
-                                       max= 13,
-                                       value = 5,
-                                       step=1),
-
-                   # br(),
-                  # Variance graph of the PCs selected
+                                      label = "Choose number of Bins",
+                                      min = 3,
+                                      max= 13,
+                                      value = 5,
+                                      step=1),
 
                   shiny::plotOutput(ns("district_bars"),
-                                    height = "350px",
+                                    height = "330px",
                                     width = '100%'),
-                  br(),
+                  # br(),
 
-                   downloadButton(ns("mapdata"), "Data", class= "btn-sm"),
-                   actionButton(ns("screenshot"), "Image",class="btn-sm", icon=icon("camera")),
-                   actionButton(ns("help_map"), "Help", icon= icon('question-circle'), class ="btn-sm"),
+
+
+                   # downloadButton(ns("mapdata"), "Data", class= "btn-sm"),
+                   # actionButton(ns("screenshot"), "Image",class="btn-sm", icon=icon("camera")),
+                   # actionButton(ns("help_map"), "Help", icon= icon('question-circle'), class ="btn-sm"),
                    # br(),
 
      ),
      shiny::mainPanel(
        width = 8,
 
+       # tags$style(type = "text/css", "html, body {width:100%;height:100%}"),
+       # tags$style(type = "text/css", "#main_map_1-main_map {height: calc(100vh - 80px) !important;}"),
+
        leaflet::leafletOutput(ns("main_map"),
-                              height = '95vh',
-                              width = "64vw"
-       ),
-       tags$style(' #main_maps_1-main_map {
+                              height = '87vh',
+                              width = "67vw"),
+
+       tags$style(' #main_map_1-main_map {
                         position: relative;
-                        margin-left: -26px;
+                        margin-left: -25px;
+                        margin-top: -20px;
+
                         padding: 0px;
                         }'),
 
@@ -88,9 +96,8 @@ mod_main_map_server <- function(id){
       # message("rendering local map")
       leaflet::leaflet(options = leaflet::leafletOptions(zoomSnap = 0.20, zoomDelta = 0.20)) %>%
         leaflet::addProviderTiles(provider =  "CartoDB.Voyager", group = "CARTO") %>%
-        leaflet::setView(lng=12, lat = 5, zoom = 5)
+        leaflet::setView(lng=10, lat = 9, zoom = 4)
     })
-
 
     #Main Map
     #selecting variable
@@ -98,7 +105,6 @@ mod_main_map_server <- function(id){
       adm2_data %>%
         dplyr::filter(description == input$description)
     })
-
 
     #Labelling for the Map
     labels_map <- shiny::reactive({
@@ -266,7 +272,7 @@ mod_main_map_server <- function(id){
     chart_data <- reactive({
     adm1_data %>%
       filter(description == input$description) %>%
-        mutate(ADM1_NAME = fct_reorder(factor(ADM1_NAME), value))
+        mutate(ADM1_NAME = fct_reorder(factor(ADM1_NAME), value, .na_rm=FALSE))
     })
 
     chart_data() %>%

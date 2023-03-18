@@ -9,10 +9,26 @@ app_ui <- function(request) {
     # Leave this function for adding external resources
     golem_add_external_resources(),
     # Your application UI logic
-    fluidPage(
+    # fluidPage(
       # "NigeriaDisasterRisks",
-      mod_main_map_ui("main_map_1")
+    tagList(
+      shiny::navbarPage(
+        title = "NIGERIA CLIMATE RISKS",
+        # fluid = TRUE,
+        # theme = shinythemes::shinytheme("journal"),  #This is nice
+
+        header=tags$style(HTML(".container-fluid{
+                                 padding: 3px !important;}
+                                 navbar{
+                                 margin-bottom: 0px !important;
+                                 margin-left: 1px !important;}")),
+        shiny::tabPanel(
+         "INTERACTIVE MAPS",
+          mod_main_map_ui("main_map_1")
+        )
+
     )
+   )
   )
 }
 
@@ -25,6 +41,15 @@ app_ui <- function(request) {
 #' @importFrom golem add_resource_path activate_js favicon bundle_resources
 #' @noRd
 golem_add_external_resources <- function() {
+
+
+  addResourcePath('www', system.file('app/www', package = 'NigeriaDisasterRisks'))
+
+  tags$head(
+    golem::activate_js(),
+    tags$script(type="text/javascript", src = "wb_img.js")
+  )
+
   add_resource_path(
     "www",
     app_sys("app/www")
