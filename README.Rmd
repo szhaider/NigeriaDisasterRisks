@@ -1,0 +1,67 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%")
+  
+# library(dplyr)
+# library(leaflet)
+# library(NigeriaDisasterRisks)
+
+data("my_dataset")
+
+adm1_data <- my_dataset$adm1_data
+
+adm2_data <- my_dataset$adm2_data
+
+```
+
+# NigeriaDisasterRisks
+
+<!-- badges: start -->
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+<!-- badges: end -->
+
+The goal of NigeriaDisasterRisks application is to visualize findings from Nigeria disaster risks layers from various geo-spatial data sources
+
+## Installation
+
+You can install the development version of NigeriaDisasterRisks like so:
+
+``` r
+# To install the Nigeria application 
+
+remotes::install_github("szhaider/NigeriaDisasterRisks")
+
+# To launch the app locally
+library(NigeriaDisasterRisks)
+NigeriaDisasterRisks::run_app()
+
+#To run directly from Github
+library(shiny)
+shiny::runGitHub("NigeriaDisasterRisks", "szhaider")
+
+```
+
+These are some basic details about the data used in the application:
+
+## Various Disaster Risks dimensions covered
+
+```{r Dimensions, echo=FALSE}
+unique(adm2_data$description)
+
+```
+
+## Admin 1 for Nigeria
+
+```{r Admin1, echo=FALSE}
+unique(adm1_data$ADM1_NAME)
+
+```
