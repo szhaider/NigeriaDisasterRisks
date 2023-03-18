@@ -12,3 +12,38 @@ adm2_data <- my_dataset$adm2_data
 #Admins Boundaries load for the app
 data("nig_shp_adm2")
 
+#List of variables
+#Listed Indicator Options
+indicator_listed_adm2 = (list(
+                        `Relative Wealth Index` = list('Relative Wealth Index'),
+                        `Demography` = list("Total population according to provided census at LGA level",
+                                            "Total population (#) according to WorldPop 2020 - UN adjusted, constrained to builtup"),
+                        `Population Exposure` = list("Population exposed to medium or high hazard (population count)",
+                                                     "Population exposed to medium or high hazard (% of ADM2 population)"),
+                        `Builtup Exposure` = list("Builtup exposed to medium or high hazard (Builtup count)",
+                                                  "Builtup exposed to medium or high hazard (% of ADM2 Builtup)"),
+                        `Agriculture Area`  = list("Total area of agricultural land (hectares) according to ESA land cover 2020"),
+                        `Built-up Area` = list("Total area of builtup (hectares) according to World Settlement Footprint 2019"),
+                        `River flooding` = list("Expected mortality from river floods (population count)",
+                                                 "Expected mortality from river floods (% of ADM3 population)",
+                                                 "Expected damage on builtup from river floods (hectars)",
+                                                 "Expected damage on builtup from river floods (% of ADM3 builtup)",
+                                                 "Expected damage on agricultural land from river floods (hectars)",
+                                                 "Expected damage on agricultural land from river floods (% of ADM3 builtup)"),
+                        `River flooding & Coastal flooding` = list("Expected mortality from river and coastal floods (population count)",
+                                                                   "Expected damage on builtup from river and coastal floods (hectars)",
+                                                                   "Expected damage on agricultural land from river and coastal floods (hectars)"),
+                        `Heat stress` = list("Expected impact from heat stress (population count)",
+                                             "Expected impact from heat stress (% of ADM3 population)"),
+                        `Air pollution`= list("Expected increse of mortality from air pollution (% of ADM3 population)",
+                                              "Expected increse of mortality from air pollution (population count)"),
+                         `Coastal flooding` = list("Expected mortality from coastal floods (population count)",
+                                                   "Expected mortality from coastal floods (% of ADM3 population)",
+                                                   "Expected damage on builtup from coastal floods (hectars)",
+                                                   "Expected damage on builtup from coastal floods (% of ADM3 builtup)",
+                                                   "Expected damage on agricultural land from coastal floods (hectars)",
+                                                   "Expected damage on agricultural land from coastal floods (% of ADM3 builtup)"),
+                         `Agricultural Stress` = list("Frequency of agricultural stress affecting at least 30% of arable land during Season 1 (percentage of historical period 1984-2022)",
+                                                      "Frequency of agricultural stress affecting at least 30% of arable land during Season 2 (percentage of historical period 1984-2022)")
+
+                         ))

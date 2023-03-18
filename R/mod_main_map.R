@@ -16,6 +16,7 @@
 #' @importFrom dplyr filter mutate
 #' @importFrom forcats fct_reorder
 #' @import shiny
+#' @importFrom shinyWidgets pickerInput
 #' @importFrom shinyscreenshot screenshot
 #' @importFrom  ggplot2 ggplot geom_col aes labs theme element_line element_blank
 #'
@@ -25,27 +26,38 @@ mod_main_map_ui <- function(id){
     tagList(
       sidebarLayout(
                  sidebarPanel(
-
-
-
                    width = 4,
                    style = "background-color: white;
                             margin-top: -20px;
                             margin-bottom:0px;",
                    # tags$strong(tags$em(tags$h6("Select the variables using the dropdown menu below for the maps"))),
-                  shiny::selectInput(ns("description"),
-                                       "Select Variable: ",
-                                       choices = unique(adm2_data$description)),
+                  # shiny::selectInput(ns("description"),
+                  #                      "Select a Variable: ",
+                  #                      choices = indicator_listed_adm2),
 
-                  shiny::numericInput(ns("bins"),
-                                      label = "Choose number of Bins",
-                                      min = 3,
-                                      max= 13,
-                                      value = 5,
-                                      step=1),
+                  # shinyWidgets::pickerInput(
+                  #
+                  #     inputId = ns("description"),
+                  #     label = "Select a Variable: ",
+                  #     choices = indicator_listed_adm2,
+                  #     options = list(`live-search` = TRUE),
+                  #     choicesOpt = list(
+                  #       style = rep_len("font-size: 90%; line-height: 1.6;", 30)
+                  #     )
+                  #     ),
+                  #
+                  #
+                  #
+                  #
+                  # shiny::numericInput(ns("bins"),
+                  #                     label = "Choose number of Bins",
+                  #                     min = 3,
+                  #                     max= 13,
+                  #                     value = 5,
+                  #                     step=1),
 
                   shiny::plotOutput(ns("district_bars"),
-                                    height = "330px",
+                                    height = "400px",
                                     width = '100%'),
                   # br(),
 
@@ -60,8 +72,7 @@ mod_main_map_ui <- function(id){
      shiny::mainPanel(
        width = 8,
 
-       # tags$style(type = "text/css", "html, body {width:100%;height:100%}"),
-       # tags$style(type = "text/css", "#main_map_1-main_map {height: calc(100vh - 80px) !important;}"),
+
 
        leaflet::leafletOutput(ns("main_map"),
                               height = '87vh',
@@ -71,9 +82,42 @@ mod_main_map_ui <- function(id){
                         position: relative;
                         margin-left: -25px;
                         margin-top: -20px;
-
                         padding: 0px;
                         }'),
+
+       shiny::absolutePanel(
+         id = "controls", class = "panel panel-default", fixed= TRUE,
+         draggable = FALSE, bottom = "auto", left = "auto", right = 10, top = 70,
+         width = 300, height = "auto",
+         style = "background-color: white;
+                   opacity: 0.85;
+                   padding: 20px 20px 20px 20px;
+                   margin: auto;
+                   border-radius: 5pt;
+                   box-shadow: 0pt 0pt 6pt 0px rgba(61,59,61,0.48);
+                   padding-bottom: 2mm;
+                   padding-top: 1mm;",
+
+
+         shinyWidgets::pickerInput(
+           inputId = ns("description"),
+           label = "Select a Variable: ",
+           choices = indicator_listed_adm2,
+
+            options = list(`live-search` = TRUE,
+                           `dropdown-align-right` = 'auto'),
+           choicesOpt = list(
+
+             style = rep_len("font-size: 90%; line-height: 1.6;", 30))
+         ),
+
+         shiny::numericInput(ns("bins"),
+                             label = "Choose number of Bins",
+                             min = 3,
+                             max= 13,
+                             value = 5,
+                             step=1)
+         )
 
        # shiny::verbatimTextOutput(ns("source_main_map")),
        # tags$head(tags$style("#main_maps_1-source_main_map {color:black; font-size:12px; font-style:italic;
@@ -96,7 +140,7 @@ mod_main_map_server <- function(id){
       # message("rendering local map")
       leaflet::leaflet(options = leaflet::leafletOptions(zoomSnap = 0.20, zoomDelta = 0.20)) %>%
         leaflet::addProviderTiles(provider =  "CartoDB.Voyager", group = "CARTO") %>%
-        leaflet::setView(lng=10, lat = 9, zoom = 4)
+        leaflet::setView(lng=10, lat = 9, zoom = 4.8)
     })
 
     #Main Map
@@ -108,9 +152,9 @@ mod_main_map_server <- function(id){
 
     #Labelling for the Map
     labels_map <- shiny::reactive({
-      paste0(glue::glue("<b>Admin 2: </b>: { nig_shp_adm2$ADM2_NAME } </br>"),
-             glue::glue("<b>map_data()$description </b>"), " ",
-             glue::glue("{ round(map_data()$value, 2) }"),
+      paste0(glue::glue("<b>Admin 2: { nig_shp_adm2$ADM2_NAME } </b> </br>"),
+             # glue::glue("<b>Variable: { map_data()$description } </b>"), " ",
+             glue::glue("<b>Value: <b/>  { round(map_data()$value, 2) }"),
              sep = "") %>%
         lapply(htmltools::HTML)
     })
@@ -185,11 +229,11 @@ mod_main_map_server <- function(id){
                              weight = 1,
                              opacity = 0.9,
                              fill = TRUE,
-                             dashArray = c(5,5),
+                             dashArray = c(3,3),
 
-                             smoothFactor = 0.8,
+                             smoothFactor = 1,
                              highlightOptions = leaflet::highlightOptions(weight= 2.5,
-                                                                          color = "darkgrey",
+                                                                          color = "black",
                                                                           fillOpacity = 1,
                                                                           opacity= 1,
                                                                           bringToFront = TRUE),
@@ -198,7 +242,7 @@ mod_main_map_server <- function(id){
 
       leaflet::leafletProxy("main_map", data= map_data()) %>%
         leaflet::clearControls() %>%
-        leaflet::addLegend("bottomright",
+        leaflet::addLegend("bottomleft",
                            pal= pal_leg(),
                            values= map_data()$value,
                            # title =
