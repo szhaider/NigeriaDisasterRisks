@@ -13,7 +13,7 @@
 #' @importFrom  leaflet tileOptions leafletProxy addLegend clearControls
 #' @importFrom htmltools HTML tags
 #' @importFrom glue glue
-#' @importFrom dplyr filter mutate
+#' @importFrom dplyr filter mutate slice_max
 #' @importFrom forcats fct_reorder
 #' @import shiny
 #' @importFrom shinyWidgets pickerInput
@@ -57,7 +57,7 @@ mod_main_map_ui <- function(id){
                   #                     step=1),
 
                   shiny::plotOutput(ns("district_bars"),
-                                    height = "400px",
+                                    height = "450px",
                                     width = '100%'),
                   # br(),
 
@@ -71,6 +71,7 @@ mod_main_map_ui <- function(id){
      ),
      shiny::mainPanel(
        width = 8,
+
 
       tags$style(type = "text/css", "#main_map_1-main_map {height: calc(103vh - 100px) !important;
                        position: relative;
@@ -96,7 +97,6 @@ mod_main_map_ui <- function(id){
                    box-shadow: 0pt 0pt 0pt 0px rgba(61,59,61,0.48);
                    padding-bottom: 0.5mm;
                    padding-top: 1mm;",
-
 
          shinyWidgets::pickerInput(
            inputId = ns("description"),
@@ -125,10 +125,6 @@ mod_main_map_ui <- function(id){
            choicesOpt = list(style = rep_len("font-size: 90%; line-height: 1.6;", 30))
          ),
          ),
-
-
-
-
        # shiny::verbatimTextOutput(ns("source_main_map")),
        # tags$head(tags$style("#main_maps_1-source_main_map {color:black; font-size:12px; font-style:italic;
        #               max-height: 120px; background: #ffe6cc;}"))
@@ -158,10 +154,10 @@ mod_main_map_server <- function(id){
     map_data <- shiny::reactive({
       req(input$polygon)
       if(input$polygon == "Admin 2"){
-      adm2_data %>%
+        my_dataset$adm2_data %>%
         dplyr::filter(description == input$description)
       }else{
-        adm1_data %>%
+        my_dataset$adm1_data %>%
         dplyr::filter(description == input$description)
         }
     })
@@ -183,9 +179,9 @@ mod_main_map_server <- function(id){
     req(input$polygon)
 
     if(input$polygon == "Admin 2"){
-     return(nig_admins$adm2)
+      nig_admins$adm2
     }else{
-      return(nig_admins$adm1)
+      nig_admins$adm1
     }
 
     })
@@ -244,6 +240,7 @@ mod_main_map_server <- function(id){
     # shiny::observeEvent(input$time,{
 
   leafproxy <- reactive({
+
       req(input$polygon)
 
       leaflet::leafletProxy("main_map",
@@ -259,22 +256,22 @@ mod_main_map_server <- function(id){
 
     leafproxy() %>%
 
-        leaflet::addPolygons(label= labels_map(),
+        leaflet::addPolygons(
+          layerId = ~ADM1_CODE,   #To make interactive plots based on polygons
+          label= labels_map(),
                              labelOptions = leaflet::labelOptions(
                                style = list("font-weight"= "normal",
                                             padding= "3px 8px",
                                             "color"= "black"),
                                textsize= "10px",
                                direction = "auto",
-                               opacity = 0.9
-
-                             ),
+                               opacity = 0.9),
                              fillColor =  ~pal()(map_data()$value),
                              fillOpacity = 1,
                              stroke = TRUE,
                              color= "white",
                              weight = 1,
-                             opacity = 0.9,
+                             opacity = 1,
                              fill = TRUE,
                              dashArray = c(3,3),
 
@@ -366,31 +363,84 @@ mod_main_map_server <- function(id){
     #Main District Bars
     ##############################################.
     ####Bar Chart  ---- May be go for top 10
-    ###############################################.
+    ###############################################
 
-    output$district_bars <- renderPlot({
+    observe({
 
-    chart_data <- reactive({
-    adm1_data %>%
-      filter(description == input$description) %>%
-        mutate(ADM1_NAME = fct_reorder(factor(ADM1_NAME), value, .na_rm=FALSE))
+      event <- input$main_map_shape_click
+
+       tehsil <- nig_shp_adm1$ADM_NAME[ nig_shp_adm1$ADM1_CODE == event$id]
+
+       chart_data <-
+             # req(input$polygon == "Admin 1")
+             adm2_data %>%
+               filter(description == input$description) %>%
+               mutate(ADM2_NAME = fct_reorder(factor(ADM2_NAME), value, .na_rm=FALSE)) %>%
+               filter(ADM1_NAME %in% tehsil)
+
+       output$district_bars <- renderPlot({
+           chart_data %>%
+             ggplot(aes(y= ADM2_NAME,
+                        x=value)) +
+             geom_col(fill="seagreen",
+                       width = 0.6,
+                       alpha=0.7) +
+             labs(y= "Admin 2",
+                  x = "Variable")+
+             theme(
+               axis.line = element_line(color='black'),
+               plot.background = element_blank(),
+               panel.grid.major = element_blank(),
+               panel.grid.minor = element_blank(),
+               panel.border = element_blank())
+             })
+
+         # output$source_main_map <- shiny::renderText({
+         #   if(is.null(tehsils)){
+         #     print("dvbdshvbsd")
+         #   }else{
+         #     print(tehsils)
+         #   }
+         #   })
+         # shiny::renderText(nig_shp_adm1$ADM_NAME[nig_shp_adm1$ADM1_CODE == click_event$id])
+
     })
 
-    chart_data() %>%
-      ggplot(aes(y=ADM1_NAME,
-                 x=value)) +
-      geom_col(fill="seagreen",
-                width = 0.6,
-                alpha=0.7) +
-      labs(y= "Admin 1",
-           x = "Variable")+
-      theme(
-        axis.line = element_line(color='black'),
-        plot.background = element_blank(),
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.border = element_blank())
-    })
+    # observe({
+    #
+    #   click_event <- input$map_shape_click
+    #
+    #   tehsil <- nig_admins$adm1$ADM_NAME[nig_admins$adm1$ADM1_CODE == click_event$id]
+    #
+    #
+    #   chart_data <-
+    #     # req(input$polygon == "Admin 1")
+    #     adm2_data %>%
+    #       filter(description == input$description) %>%
+    #       mutate(ADM2_NAME = fct_reorder(factor(ADM2_NAME), value, .na_rm=FALSE)) %>%
+    #       filter(ADM1_NAME %in% c(tehsil))
+    #
+    #   output$district_bars <- renderPlot({
+    #   chart_data %>%
+    #     ggplot(aes(y= ADM2_NAME,
+    #                x=value)) +
+    #     geom_col(fill="seagreen",
+    #               width = 0.6,
+    #               alpha=0.7) +
+    #     labs(y= "Admin 2",
+    #          x = "Variable")+
+    #     theme(
+    #       axis.line = element_line(color='black'),
+    #       plot.background = element_blank(),
+    #       panel.grid.major = element_blank(),
+    #       panel.grid.minor = element_blank(),
+    #       panel.border = element_blank())
+    #     })
+    # })
+
+
+
+
 
 
   })
