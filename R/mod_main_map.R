@@ -72,31 +72,30 @@ mod_main_map_ui <- function(id){
      shiny::mainPanel(
        width = 8,
 
-
-
+      tags$style(type = "text/css", "#main_map_1-main_map {height: calc(103vh - 100px) !important;
+                       position: relative;
+                       margin-left: -25px;
+                       margin-top: -20px;
+                       margin-bottom: -40px;
+                       padding: 0px;
+                  }"),
        leaflet::leafletOutput(ns("main_map"),
-                              height = '87vh',
-                              width = "67vw"),
+                              # height = '100vh',
+                              width = "68vw"),
 
-       tags$style(' #main_map_1-main_map {
-                        position: relative;
-                        margin-left: -25px;
-                        margin-top: -20px;
-                        padding: 0px;
-                        }'),
 
-       shiny::absolutePanel(
+      shiny::absolutePanel(
          id = "controls", class = "panel panel-default", fixed= TRUE,
-         draggable = FALSE, bottom = "auto", left = "auto", right = 10, top = 70,
+         draggable = FALSE, bottom = "auto", left = "auto", right = 20, top = 70,
          width = 300, height = "auto",
          style = "background-color: white;
-                   opacity: 0.85;
-                   padding: 20px 20px 20px 20px;
+                   opacity: 0.9;
+                   padding: 8px 8px 8px 8px;
                    margin: auto;
                    border-radius: 5pt;
-                   box-shadow: 0pt 0pt 6pt 0px rgba(61,59,61,0.48);
-                   padding-bottom: 2mm;
-                   padding-top: 1mm;",
+                   box-shadow: 0pt 0pt 0pt 0px rgba(61,59,61,0.48);
+                   padding-bottom: 1mm;
+                   padding-top: 1.5mm;",
 
 
          shinyWidgets::pickerInput(
