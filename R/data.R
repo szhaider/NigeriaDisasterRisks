@@ -10,10 +10,22 @@ adm1_data <- my_dataset$adm1_data
 adm2_data <- my_dataset$adm2_data
 
 #Admins Boundaries load for the app
-data("nig_shp_adm2")
+data("nig_admins")
+
+nig_shp_adm0 <- nig_admins$adm0
+
+nig_shp_adm1 <- nig_admins$adm1
+
+nig_shp_adm2 <- nig_admins$adm2
 
 #List of variables
 #Listed Indicator Options
+
+#admin 1
+
+
+
+#admin 2
 indicator_listed_adm2 = (list(
                         `Relative Wealth Index` = list('Relative Wealth Index'),
                         `Demography` = list("Total population according to provided census at LGA level",

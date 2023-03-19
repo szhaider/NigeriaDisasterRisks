@@ -86,16 +86,16 @@ mod_main_map_ui <- function(id){
 
       shiny::absolutePanel(
          id = "controls", class = "panel panel-default", fixed= TRUE,
-         draggable = FALSE, bottom = "auto", left = "auto", right = 20, top = 70,
+         draggable = FALSE, bottom = "auto", left = "auto", right = 5, top = 60,
          width = 300, height = "auto",
          style = "background-color: white;
                    opacity: 0.9;
-                   padding: 8px 8px 8px 8px;
+                   padding: 5px 5px 5px 5px;
                    margin: auto;
                    border-radius: 5pt;
                    box-shadow: 0pt 0pt 0pt 0px rgba(61,59,61,0.48);
-                   padding-bottom: 1mm;
-                   padding-top: 1.5mm;",
+                   padding-bottom: 0.5mm;
+                   padding-top: 1mm;",
 
 
          shinyWidgets::pickerInput(
@@ -115,8 +115,19 @@ mod_main_map_ui <- function(id){
                              min = 3,
                              max= 13,
                              value = 5,
-                             step=1)
-         )
+                             step=1),
+
+         shinyWidgets::pickerInput(
+           inputId = ns("polygon"),
+           label = "Select Admin level: ",
+           choices = c("Admin 1", "Admin 2"),
+          options = list(`dropdown-align-right` = 'auto'),
+           choicesOpt = list(style = rep_len("font-size: 90%; line-height: 1.6;", 30))
+         ),
+         ),
+
+
+
 
        # shiny::verbatimTextOutput(ns("source_main_map")),
        # tags$head(tags$style("#main_maps_1-source_main_map {color:black; font-size:12px; font-style:italic;
@@ -145,15 +156,45 @@ mod_main_map_server <- function(id){
     #Main Map
     #selecting variable
     map_data <- shiny::reactive({
+      req(input$polygon)
+      if(input$polygon == "Admin 2"){
       adm2_data %>%
         dplyr::filter(description == input$description)
+      }else{
+        adm1_data %>%
+        dplyr::filter(description == input$description)
+        }
+    })
+
+    # map_data <- reactive({
+    #     if(input$polygon == "Admin 2"){
+    #     adm2_data %>%
+    #       dplyr::filter(description == input$description)
+    #     }else{
+    #       adm2_data %>%
+    #       dplyr::filter(description == input$description) %>%
+    #       dplyr::group_by(ADM2_NAME) %>%
+    #       dplyr::summarise(value= mean(value))
+    #       }
+    # })
+
+    shps <- reactive({
+
+    req(input$polygon)
+
+    if(input$polygon == "Admin 2"){
+     return(nig_admins$adm2)
+    }else{
+      return(nig_admins$adm1)
+    }
+
     })
 
     #Labelling for the Map
     labels_map <- shiny::reactive({
-      paste0(glue::glue("<b>Admin 2: { nig_shp_adm2$ADM2_NAME } </b> </br>"),
+      paste0(glue::glue("<b>Admin: { shps()$ADM_NAME } </b> </br>"),
              # glue::glue("<b>Variable: { map_data()$description } </b>"), " ",
-             glue::glue("<b>Value: <b/>  { round(map_data()$value, 2) }"),
+             glue::glue("<b>Value: <b/>  { round(map_data()$value, 3) }"),
              sep = "") %>%
         lapply(htmltools::HTML)
     })
@@ -202,15 +243,22 @@ mod_main_map_server <- function(id){
     #Dynamic leaflet
     # shiny::observeEvent(input$time,{
 
-    shiny::observe({
-
-      req(map_data())
+  leafproxy <- reactive({
+      req(input$polygon)
 
       leaflet::leafletProxy("main_map",
-                            data=nig_shp_adm2,
+                            data = shps(),
                             deferUntilFlush = TRUE) %>%
+          leaflet::clearShapes()
+  })
 
-        leaflet::clearShapes() %>%
+
+    shiny::observe({
+
+    req(map_data())
+
+    leafproxy() %>%
+
         leaflet::addPolygons(label= labels_map(),
                              labelOptions = leaflet::labelOptions(
                                style = list("font-weight"= "normal",
@@ -257,12 +305,22 @@ mod_main_map_server <- function(id){
 
     })
 
+
+
+
+
     # Message on updation of the MAPS
     shiny::observe({
-      # req(input$family)
-      req(input$variable)
-      # req(input$time)
-      shiny::showNotification("MAP is being rendered based on the selection",
+      req(input$description)
+      req(input$polygon)
+      shiny::showNotification("New MAP is being rendered based on the selection",
+                              type="message",
+                              duration = 3)
+    })
+    # Message on updation of the Bins
+    shiny::observe({
+      req(input$bins)
+      shiny::showNotification("Number of colorbins is being changed based on the input",
                               type="message",
                               duration = 3)
     })
@@ -307,7 +365,7 @@ mod_main_map_server <- function(id){
 
     #Main District Bars
     ##############################################.
-    ####Bar Chart  ----
+    ####Bar Chart  ---- May be go for top 10
     ###############################################.
 
     output$district_bars <- renderPlot({
@@ -332,7 +390,6 @@ mod_main_map_server <- function(id){
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         panel.border = element_blank())
-
     })
 
 
