@@ -7,16 +7,16 @@
 #' @noRd
 #'
 #' @importFrom shiny NS tagList
-#' @importFrom shiny selectInput tags verbatimTextOutput absolutePanel req observe
+#' @importFrom shiny selectInput tags verbatimTextOutput absolutePanel req observe observeEvent reactive
 #' @importFrom leaflet leaflet leafletOutput renderLeaflet addProviderTiles setView
 #' @importFrom leaflet leafletOptions addPolygons labelOptions highlightOptions
-#' @importFrom  leaflet tileOptions leafletProxy addLegend clearControls
+#' @importFrom  leaflet tileOptions leafletProxy addLegend clearControls clearShapes
 #' @importFrom htmltools HTML tags
 #' @importFrom glue glue
 #' @importFrom dplyr filter mutate slice_max
 #' @importFrom forcats fct_reorder
 #' @import shiny
-#' @importFrom shinyWidgets pickerInput
+#' @importFrom shinyWidgets pickerInput updatePickerInput
 #' @importFrom shinyscreenshot screenshot
 #' @importFrom  ggplot2 ggplot geom_col aes labs theme element_line element_blank
 #'
@@ -57,7 +57,7 @@ mod_main_map_ui <- function(id){
                   #                     step=1),
 
                   shiny::plotOutput(ns("district_bars"),
-                                    height = "450px",
+                                    height = "500px",
                                     width = '100%'),
                   # br(),
 
@@ -101,9 +101,9 @@ mod_main_map_ui <- function(id){
          shinyWidgets::pickerInput(
            inputId = ns("description"),
            label = "Select a Variable: ",
-           choices = indicator_listed_adm2,
+           choices = indicator_listed_adm1,
 
-            options = list(`live-search` = TRUE,
+           options = list(`live-search` = TRUE,
                            `dropdown-align-right` = 'auto'),
            choicesOpt = list(
 
@@ -141,26 +141,85 @@ mod_main_map_ui <- function(id){
 mod_main_map_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
+
+    #Shapes
+    shps <- shiny::reactive({
+
+      req(input$polygon)
+
+      if(input$polygon == "Admin 2"){
+        return(nig_shp_adm2)
+      }else{
+        return(nig_shp_adm1)
+      }
+
+    })
+
+    #Select options based on admin level since all vars in both admins aren't available
+
+    #Already selcted to stop reverting to the first var when admin shifts
+    already_selected <- shiny::reactiveVal()
+
+    observe({
+      already_selected(input$description)
+    })
+
+
+    shiny::observeEvent(input$polygon, {
+
+      choices_up = reactive({
+        if(input$polygon == "Admin 2"){
+          return(indicator_listed_adm2)
+        }else{
+          return(indicator_listed_adm1)
+        }
+      })
+
+      freezeReactiveValue(input, "description")  #to stop the logic from breaking by flickering of irrelevant output
+
+      shinyWidgets::updatePickerInput(
+        session = session,
+        inputId = "description",
+        label = "Select a Variable",
+        choices = choices_up(),
+        selected = already_selected()
+        # ,
+        # selected = input$description
+        #Use this to stop resetiing select options, but need to have same vars in both admins data files, otherwise logic breaks
+        #Insteaead let it reset
+      )
+
+
+    })
+
+
+    #Main Map
+    #selecting variable
+    map_data <- shiny::reactive({
+      # req(input$polygon)
+      if(input$polygon == "Admin 2"){
+        adm2_data %>%
+          dplyr::filter(description == input$description)
+      }else if(input$polygon == "Admin 1"){
+        adm1_data %>%
+          dplyr::filter(description == input$description)
+      # }else if(is.na(input$description)){
+      #   adm1_data %>%
+      #     dplyr::filter(description == input$description)
+       }
+    })
+
+
+
     #Lealfet static options
-    output$main_map <- leaflet::renderLeaflet({
+ output$main_map <- leaflet::renderLeaflet({
       # message("rendering local map")
       leaflet::leaflet(options = leaflet::leafletOptions(zoomSnap = 0.20, zoomDelta = 0.20)) %>%
         leaflet::addProviderTiles(provider =  "CartoDB.Voyager", group = "CARTO") %>%
         leaflet::setView(lng=10, lat = 9, zoom = 4.8)
     })
 
-    #Main Map
-    #selecting variable
-    map_data <- shiny::reactive({
-      req(input$polygon)
-      if(input$polygon == "Admin 2"){
-        my_dataset$adm2_data %>%
-        dplyr::filter(description == input$description)
-      }else{
-        my_dataset$adm1_data %>%
-        dplyr::filter(description == input$description)
-        }
-    })
+
 
     # map_data <- reactive({
     #     if(input$polygon == "Admin 2"){
@@ -174,17 +233,7 @@ mod_main_map_server <- function(id){
     #       }
     # })
 
-    shps <- reactive({
 
-    req(input$polygon)
-
-    if(input$polygon == "Admin 2"){
-      nig_admins$adm2
-    }else{
-      nig_admins$adm1
-    }
-
-    })
 
     #Labelling for the Map
     labels_map <- shiny::reactive({
@@ -206,17 +255,17 @@ mod_main_map_server <- function(id){
     # })
 
     #breaks defined
-    breaks <- reactive({
+    breaks <- shiny::reactive({
       # req(unique(map_data()$context) %in% c("negative", "positive"))
       stats::quantile(map_data()$value, seq(0, 1, 1 / (input$bins)), na.rm = TRUE) %>%
         unique()
     })
 
-    pal_new <- reactive({
+    pal_new <- shiny::reactive({
       rev(grDevices::colorRampPalette(colors = c('#2c7bb6', '#abd9e9', '#ffffbf', '#fdae61', '#d7191c'), space = "Lab")(input$bins))
     })
 
-    pal <- reactive ({
+    pal <- shiny::reactive ({
       leaflet::colorBin(palette = pal_new(),
                         bins= breaks(),
                         na.color = "grey",
@@ -226,7 +275,7 @@ mod_main_map_server <- function(id){
     })
 
     # Pal_legend
-    pal_leg <- reactive ({
+    pal_leg <- shiny::reactive ({
       leaflet::colorBin(palette = pal_new(),
                         bins= breaks(),
                         na.color = "grey",
@@ -237,25 +286,35 @@ mod_main_map_server <- function(id){
     })
 
     #Dynamic leaflet
-    # shiny::observeEvent(input$time,{
+     # shiny::observeEvent(input$polygon,{
 
-  leafproxy <- reactive({
+  # shiny::observe({
 
-      req(input$polygon)
+  # req(input$polygon)
 
-      leaflet::leafletProxy("main_map",
-                            data = shps(),
-                            deferUntilFlush = TRUE) %>%
-          leaflet::clearShapes()
-  })
+   leafproxy <- shiny::reactive({
 
+       # req(input$polygon)
 
-    shiny::observe({
+       leaflet::leafletProxy("main_map",
+                             data = shps(),
+                             deferUntilFlush = TRUE) %>%
+           leaflet::clearShapes()
+   })
 
-    req(map_data())
+     # })
 
+  shiny::observe({
+    # shiny::observe({
+    #
+    shiny::req(map_data())
+
+    # leafproxy() %>%
+    # leaflet::leafletProxy("main_map",
+    #                       data = shps(),
+    #                       deferUntilFlush = TRUE) %>%
+    #   leaflet::clearShapes() %>%
     leafproxy() %>%
-
         leaflet::addPolygons(
           layerId = ~ADM1_CODE,   #To make interactive plots based on polygons
           label= labels_map(),
@@ -308,15 +367,15 @@ mod_main_map_server <- function(id){
 
     # Message on updation of the MAPS
     shiny::observe({
-      req(input$description)
-      req(input$polygon)
+      shiny::req(input$description)
+      shiny::req(input$polygon)
       shiny::showNotification("New MAP is being rendered based on the selection",
                               type="message",
                               duration = 3)
     })
     # Message on updation of the Bins
     shiny::observe({
-      req(input$bins)
+      shiny::req(input$bins)
       shiny::showNotification("Number of colorbins is being changed based on the input",
                               type="message",
                               duration = 3)
