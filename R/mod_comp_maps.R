@@ -50,7 +50,8 @@ mod_comp_maps_ui <- function(id){
                               choices = indicator_listed_adm1,
                               options = list(`live-search` = TRUE,
                                              `dropdown-align-right` = 'auto',
-                                             style = "my-pickerinput"   ####
+                                             style = "my-pickerinput" ,
+                                             size = 10
                                              ),
 
                               choicesOpt = list(style = rep_len("font-size: 70%; line-height: 1;", 30))
@@ -102,7 +103,8 @@ mod_comp_maps_ui <- function(id){
 
                               options = list(`live-search` = TRUE,
                                              `dropdown-align-right` = 'auto',
-                                             style = "my-pickerinput" ),
+                                             style = "my-pickerinput",
+                                             size = 10 ),
                               choicesOpt = list(
 
                               style = rep_len("font-size: 70%; line-height: 1;", 30))

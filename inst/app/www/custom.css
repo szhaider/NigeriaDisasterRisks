@@ -17,11 +17,12 @@
              background-color: white;
              opacity: 0.9;
              padding: 5px 5px 5px 5px;
-             margin: auto;
+             margin-right: -10 ;
              border-radius: 5pt;
              box-shadow: 0pt 0pt 0pt 0px rgba(61,59,61,0.48);
              padding-bottom: 0mm;
              padding-top: 1mm;
+             z-index: 10000;
  }
 
 
@@ -73,6 +74,7 @@
                                        margin-left: -13px;
                                         margin-right: -13.5px;
                                        position: relative;
+
 }
 
 #comp_maps_1-double_map_2 {
@@ -85,3 +87,8 @@
                                        position: relative;
 }
 
+
+
+#scatter_1-scatterplot {
+                        height: calc(100vh - 100px) !important;
+}

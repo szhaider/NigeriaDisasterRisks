@@ -44,6 +44,7 @@ mod_scatter_ui <- function(id){
         ),
       ),
       mainPanel(
+
         width = 9,
 
         shiny::plotOutput(ns("scatterplot"),
@@ -62,13 +63,13 @@ mod_scatter_server <- function(id){
     ns <- session$ns
 
 
-    wide_data <- shiny::reactive({
-    adm2_data %>%
-      tidyr::pivot_wider(id_cols = c(ADM1_NAME, ADM2_NAME),
-                         names_from = description,
-                         values_from = value)
-
-    })
+    # wide_data <- shiny::reactive({
+    # adm2_data %>%
+    #   tidyr::pivot_wider(id_cols = c(ADM1_NAME, ADM2_NAME),
+    #                      names_from = description,
+    #                      values_from = value)
+    #
+    # })
 
     output$scatterplot <- shiny::renderPlot({
 
@@ -80,11 +81,12 @@ mod_scatter_server <- function(id){
       #   geom_point()
 
       # x=.data[[input$description_1]], y=.data[[input$description_2]]
-      wide_data() %>%
+      wide_data %>%
         dplyr::select(ADM2_NAME, xvar(), yvar()) %>%
         ggplot2::ggplot(ggplot2::aes(.data[[xvar()]], .data[[yvar()]])) +
-        ggplot2::geom_point()+
+        ggplot2::geom_point(size = 2, alpha=0.7, color= "midnightblue")+
         ggplot2::theme_classic()
+
     })
   })
 }

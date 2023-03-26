@@ -17,6 +17,16 @@ nig_shp_adm1 <- sf::st_as_sf(nig_admins$adm1)
 
 nig_shp_adm2 <- sf::st_as_sf(nig_admins$adm2)
 
+################################################################################
+#Wide data for admin 2
+wide_data <-
+  adm2_data %>%
+    tidyr::pivot_wider(id_cols = c(ADM1_NAME, ADM2_NAME),
+                       names_from = description,
+                       values_from = value)
+
+################################################################################
+
 #List of variables
 #Listed Indicator Options
 

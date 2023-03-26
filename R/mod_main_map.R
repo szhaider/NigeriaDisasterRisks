@@ -78,7 +78,7 @@ mod_main_map_ui <- function(id){
 
        leaflet::leafletOutput(ns("main_map"),
                               # height = '100vh',
-                              width = "66vw"
+                              width = "67vw"
                               ),
 
       shiny::absolutePanel(
@@ -93,7 +93,10 @@ mod_main_map_ui <- function(id){
 
            options = list(`live-search` = TRUE,
                            `dropdown-align-right` = 'auto',
-                          style =  "my-pickerinput" ),
+                          style =  "my-pickerinput" ,
+                          size = 10,
+
+                          windowPadding = 20),
            choicesOpt = list(
 
              style = rep_len("font-size: 90%; line-height: 1.6;", 30))
@@ -257,10 +260,10 @@ mod_main_map_server <- function(id){
 
     #breaks defined
     breaks <- shiny::reactive({
-      # req(unique(map_data()$context) %in% c("negative", "positive"))
       stats::quantile(map_data()$value, seq(0, 1, 1 / (input$bins)), na.rm = TRUE) %>%
-        unique()
-    })
+         unique()
+     })
+
 
     pal_new <- shiny::reactive({
       rev(grDevices::colorRampPalette(colors = c('#2c7bb6', '#abd9e9', '#ffffbf', '#fdae61', '#d7191c'), space = "Lab")(input$bins))
