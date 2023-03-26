@@ -14,12 +14,14 @@ mod_scatter_ui <- function(id){
   tagList(
 
     sidebarLayout(
-      sidebarPanel(width = 3,
+      sidebarPanel(
+        id = "controls_panel",
+        width = 3,
         shinyWidgets::pickerInput(
           inputId = ns("description_1"),
           label = "Select a Variable: ",
           choices = indicator_listed_adm2,
-
+          selected = "Total population according to provided census at LGA level",
           options = list(`live-search` = TRUE,
                          `dropdown-align-right` = 'auto',
                          style =  "my-pickerinput" ),
@@ -31,6 +33,7 @@ mod_scatter_ui <- function(id){
           inputId = ns("description_2"),
           label = "Select a Variable: ",
           choices = indicator_listed_adm2,
+          selected = "Total area of builtup (hectares) according to World Settlement Footprint 2019",
 
           options = list(`live-search` = TRUE,
                          `dropdown-align-right` = 'auto',
@@ -44,7 +47,7 @@ mod_scatter_ui <- function(id){
         width = 9,
 
         shiny::plotOutput(ns("scatterplot"),
-                          height = '600px')
+                          height = '570px')
 
       )
     )

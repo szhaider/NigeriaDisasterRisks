@@ -18,24 +18,28 @@ mod_comp_maps_ui <- function(id){
 
                fluidRow(
 
-                 column(width = 6,
+                 mainPanel(width = 6,
                         offset = 0,
 
 
-                        tags$style(type = 'text/css', '#comp_maps_1-double_map_1 {height: calc(100vh - 100px) !important;}',
-                        'padding-bottom:0px;
-                                       padding-left:-20px;
-                                       padding-right:-20px;
-                                       margin-left:-20px;
-                                        margin-right:-20px;
-                                       position: relative;',),
+                        # tags$style(type = 'text/css', "#comp_maps_1-double_map_1 {height: calc(100vh - 100px) !important;
+                        # 'padding-bottom:0px;
+                        #                padding-left:-20px;
+                        #                padding-right:-20px;
+                        #                margin-left:-20px;
+                        #                 margin-right:-20px;
+                        #                position: relative;}"),
                       leafletOutput(ns("double_map_1"),
-                                    width = "100%", height = "400px"
+                                    width = "49.5vw"
                                     ),
 
                             shiny::absolutePanel(
-                            id = "controls", class = "panel panel-default", fixed= TRUE,
-                            draggable = FALSE, bottom = "auto", left = "auto", right = 700, top = 60,
+                            id = "controls_panel",
+                            class = "panel panel-default",
+                            fixed= TRUE,
+                            draggable = FALSE,
+                            bottom = "auto",
+                            left = "auto", right = 715, top = 60,
                             width = 300, height = "auto",
 
                              # tags$style(".my-pickerinput {font-size: 70%; line-height: 1;}"), ###
@@ -71,22 +75,24 @@ mod_comp_maps_ui <- function(id){
 
 
                    )),
-                   column(width = 6,
+                   mainPanel(width = 6,
                           offset = 0,
 
 
-                          tags$style(type = 'text/css', '#comp_maps_1-double_map_2 {height: calc(100vh - 100px) !important;}',
-                                     'padding-bottom:0px;
-                                       padding-left:0px;
-                                       padding-right:-10px;
-                                       margin-left:-10px;
-                                       position: relative;'),
+                          # tags$style(type = "text/css', '#comp_maps_1-double_map_2 {height: calc(100vh - 100px) !important;
+                          #            'padding-bottom:0px;
+                          #              padding-left:0px;
+                          #              padding-right:-10px;
+                          #              margin-left:-10px;
+                          #              position: relative;}"),
                        leaflet::leafletOutput(ns("double_map_2"),
-                                              width = "100%", height = "400px"),
+                                              width = "49.5vw"),
 
                           shiny::absolutePanel(
-                            id = "controls", class = "panel panel-default", fixed= TRUE,
-                            draggable = FALSE, bottom = "auto", left = "auto", right = 80, top = 60,
+                            id = "controls_panel",
+                            class = "panel panel-default",
+                            fixed= TRUE,
+                            draggable = FALSE, bottom = "auto", left = "auto", right = 10, top = 60,
                             width = 300, height = "auto",
 
                             shinyWidgets::pickerInput(
@@ -217,6 +223,7 @@ mod_comp_maps_server <- function(id){
     #Labelling for the Map
     labels_map_comp1 <- shiny::reactive({
       paste0(glue::glue("<b>Admin: { shps_comp1()$ADM_NAME } </b> </br>"),
+             glue::glue("<b>Variable:</b> { map_data_comp1()$description }</br>"),
              glue::glue("<b>Value: <b/>  { round(map_data_comp1()$value, 3) }"),
              sep = "") %>%
         lapply(htmltools::HTML)
@@ -407,6 +414,7 @@ mod_comp_maps_server <- function(id){
     #Labelling for the Map
     labels_map_comp2 <- shiny::reactive({
       paste0(glue::glue("<b>Admin: { shps_comp2()$ADM_NAME } </b> </br>"),
+             glue::glue("<b>Variable:</b> { map_data_comp2()$description }</br>"),
              glue::glue("<b>Value: <b/>  { round(map_data_comp2()$value, 3) }"),
              sep = "") %>%
         lapply(htmltools::HTML)

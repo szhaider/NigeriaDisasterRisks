@@ -17,22 +17,12 @@ app_ui <- function(request) {
         # fluid = TRUE,
         # theme = shinythemes::shinytheme("journal"),  #This is nice
 
-        header=tags$style(HTML(".container-fluid{
-                                 padding: 3px !important;}
-                                 .navbar{
-                                 margin-bottom: 0px !important;
-                                 margin-left: 1px !important;}")),
-        # header=tags$style(HTML("
-        #                                 .container-fluid{
-        #                                   padding: 3px !important;
-        #                                 }
-        #
-        #
-        #                                 .navbar{
-        #                                  margin-bottom: 0px !important;
-        #                                  margin-left: 1px !important;
-        #                                  margin-right: 1px !important;
-        #                                 }")),
+        # header=tags$style(HTML(".container-fluid{
+        #                          padding: 3px !important;}
+        #                          .navbar{
+        #                          margin-bottom: 0px !important;
+        #                          margin-left: 1px !important;}")),
+
         shiny::tabPanel(
          "INTERACTIVE MAPS",
           mod_main_map_ui("main_map_1")
@@ -70,6 +60,10 @@ golem_add_external_resources <- function() {
     golem::activate_js(),
     tags$script(type="text/javascript", src = "wb_img.js")
   )
+
+  tags$head(
+    includeCSS(path =  "inst/app/www/custom.css")
+    )
 
   add_resource_path(
     "www",

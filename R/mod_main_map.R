@@ -26,6 +26,8 @@ mod_main_map_ui <- function(id){
     tagList(
       sidebarLayout(
                  sidebarPanel(
+                   id = "sidebar-panel",
+
                    width = 4,
                    style = "background-color: white;
                             margin-top: -20px;
@@ -58,8 +60,9 @@ mod_main_map_ui <- function(id){
                   h5(tags$b(tags$em("Click on the map polygons to access the ranked variation within Admin 2"))),
 
                   shiny::plotOutput(ns("district_bars"),
-                                    height = "500px",
-                                    width = '100%'),
+                                    # height = "300px",
+                                    # width = '100%'),
+                  ),
                   # br(),
 
 
@@ -73,32 +76,15 @@ mod_main_map_ui <- function(id){
      shiny::mainPanel(
        width = 8,
 
-
-      tags$style(type = "text/css", "#main_map_1-main_map {height: calc(103vh - 100px) !important;
-                       position: relative;
-                       margin-left: -25px;
-                       margin-right: -25px;
-                       margin-top: 0px;
-                       margin-bottom: -40px;
-                       padding: 0px;
-                  }"),
        leaflet::leafletOutput(ns("main_map"),
                               # height = '100vh',
-                              width = "68vw"),
-
+                              width = "66vw"
+                              ),
 
       shiny::absolutePanel(
-         id = "controls", class = "panel panel-default", fixed= TRUE,
+         id = "controls_panel", class = "panel panel-default", fixed= TRUE,
          draggable = FALSE, bottom = "auto", left = "auto", right = 5, top = 60,
          width = 300, height = "auto",
-         # style = "background-color: white;
-         #           opacity: 0.9;
-         #           padding: 5px 5px 5px 5px;
-         #           margin: auto;
-         #           border-radius: 5pt;
-         #           box-shadow: 0pt 0pt 0pt 0px rgba(61,59,61,0.48);
-         #           padding-bottom: 0.5mm;
-         #           padding-top: 1mm;",
 
          shinyWidgets::pickerInput(
            inputId = ns("description"),
@@ -253,7 +239,7 @@ mod_main_map_server <- function(id){
     #Labelling for the Map
     labels_map <- shiny::reactive({
       paste0(glue::glue("<b>Admin: { shps()$ADM_NAME } </b> </br>"),
-             # glue::glue("<b>Variable: { map_data()$description } </b>"), " ",
+             glue::glue("<b>Variable:</b> { map_data()$description }</br>"),
              glue::glue("<b>Value: <b/>  { round(map_data()$value, 3) }"),
              sep = "") %>%
         lapply(htmltools::HTML)
