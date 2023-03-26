@@ -76,7 +76,8 @@ mod_main_map_ui <- function(id){
       tags$style(type = "text/css", "#main_map_1-main_map {height: calc(103vh - 100px) !important;
                        position: relative;
                        margin-left: -25px;
-                       margin-top: -20px;
+                       margin-right: -25px;
+                       margin-top: 0px;
                        margin-bottom: -40px;
                        padding: 0px;
                   }"),
@@ -89,14 +90,14 @@ mod_main_map_ui <- function(id){
          id = "controls", class = "panel panel-default", fixed= TRUE,
          draggable = FALSE, bottom = "auto", left = "auto", right = 5, top = 60,
          width = 300, height = "auto",
-         style = "background-color: white;
-                   opacity: 0.9;
-                   padding: 5px 5px 5px 5px;
-                   margin: auto;
-                   border-radius: 5pt;
-                   box-shadow: 0pt 0pt 0pt 0px rgba(61,59,61,0.48);
-                   padding-bottom: 0.5mm;
-                   padding-top: 1mm;",
+         # style = "background-color: white;
+         #           opacity: 0.9;
+         #           padding: 5px 5px 5px 5px;
+         #           margin: auto;
+         #           border-radius: 5pt;
+         #           box-shadow: 0pt 0pt 0pt 0px rgba(61,59,61,0.48);
+         #           padding-bottom: 0.5mm;
+         #           padding-top: 1mm;",
 
          shinyWidgets::pickerInput(
            inputId = ns("description"),
@@ -210,16 +211,20 @@ mod_main_map_server <- function(id){
     })
 
 
+#Bounds
+  country_bounds <-   nig_shp_adm0 %>% sf::st_bbox()
 
     #Lealfet static options
  output$main_map <- leaflet::renderLeaflet({
       # message("rendering local map")
       leaflet::leaflet(options = leaflet::leafletOptions(zoomSnap = 0.20, zoomDelta = 0.20)) %>%
-        leaflet::addProviderTiles(provider =  "CartoDB.Voyager", group = "CARTO") %>%
-        leaflet::setView(lng=10, lat = 9, zoom = 4.8)
+        leaflet::addProviderTiles(provider =  "CartoDB.Voyager") %>%
+     leaflet::fitBounds(country_bounds[[1]], country_bounds[[2]], country_bounds[[3]], country_bounds[[4]]) %>%
+     leaflet::setView(lng=10, lat = 9, zoom = 4.8) #
     })
 
-
+ #Need to check
+ outputOptions(output, "main_map", suspendWhenHidden = FALSE, priority = 1000)
 
     # map_data <- reactive({
     #     if(input$polygon == "Admin 2"){
@@ -303,6 +308,8 @@ mod_main_map_server <- function(id){
    })
 
      # })
+
+
 
   shiny::observe({
     # shiny::observe({

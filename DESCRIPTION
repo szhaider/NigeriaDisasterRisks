@@ -20,6 +20,7 @@ Imports:
     grDevices,
     htmltools,
     leaflet,
+    leaflet.minicharts,
     magrittr,
     pkgload,
     rlang,

@@ -19,12 +19,28 @@ app_ui <- function(request) {
 
         header=tags$style(HTML(".container-fluid{
                                  padding: 3px !important;}
-                                 navbar{
+                                 .navbar{
                                  margin-bottom: 0px !important;
                                  margin-left: 1px !important;}")),
+        # header=tags$style(HTML("
+        #                                 .container-fluid{
+        #                                   padding: 3px !important;
+        #                                 }
+        #
+        #
+        #                                 .navbar{
+        #                                  margin-bottom: 0px !important;
+        #                                  margin-left: 1px !important;
+        #                                  margin-right: 1px !important;
+        #                                 }")),
         shiny::tabPanel(
          "INTERACTIVE MAPS",
           mod_main_map_ui("main_map_1")
+        ),
+
+        shiny::tabPanel(
+          "COMPARISON MAPS",
+          mod_comp_maps_ui("comp_maps_1")
         )
 
     )
