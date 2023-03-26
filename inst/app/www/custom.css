@@ -1,0 +1,87 @@
+
+.container-fluid{
+                 padding: 3px !important;
+
+}
+
+.navbar{
+         min-height: 25px;
+        margin-bottom: 3px !important;
+        margin-left: 2px !important;
+
+}
+
+/*  absolute panel*/
+ #controls_panel {
+              /*height: calc(45vh - 100px) !important;*/
+             background-color: white;
+             opacity: 0.9;
+             padding: 5px 5px 5px 5px;
+             margin: auto;
+             border-radius: 5pt;
+             box-shadow: 0pt 0pt 0pt 0px rgba(61,59,61,0.48);
+             padding-bottom: 0mm;
+             padding-top: 1mm;
+ }
+
+
+.leaflet-bottom {
+    zoom: 0.80 !important;
+}
+
+.leaflet-top {
+    zoom: 0.80 !important;
+    z-index: 700 !important;
+}
+
+.leaflet-tooltip {
+    max-width: 300px;
+    min-width: 200px;
+    width: 250px;
+    /* overflow-wrap: break-word; */
+    white-space: pre-wrap;
+}
+
+
+#main_map_1-main_map {
+                      height: calc(103vh - 100px) !important;
+                       position: relative;
+                       margin-left: -25px;
+                       margin-right: -25px;
+                       margin-top: 0px;
+                       margin-bottom: -40px;
+                       padding: 0px;
+                  }
+
+#main_map_1-district_bars {
+                          height: calc(92.5vh - 100px) !important;
+                          padding-bottom: 0px;
+
+
+}
+
+#sidebar-panel {
+  padding-top: 5px;
+}
+
+
+#comp_maps_1-double_map_1 {
+                         height: calc(105vh - 100px) !important;
+                                       padding-bottom:0px;
+                                       padding-left:0px;
+                                       padding-right:0px;
+                                       margin-left: -13px;
+                                        margin-right: -13.5px;
+                                       position: relative;
+}
+
+#comp_maps_1-double_map_2 {
+                         height: calc(105vh - 100px) !important;
+                                       padding-bottom:0px;
+                                       padding-left:0px;
+                                       padding-right:px;
+                                       margin-left: -13.5px;
+                                       margin-right: 0px;
+                                       position: relative;
+}
+
