@@ -55,6 +55,7 @@ mod_main_map_ui <- function(id){
                   #                     max= 13,
                   #                     value = 5,
                   #                     step=1),
+                  h5(tags$b(tags$em("Click on the map polygons to access the ranked variation within Admin 2"))),
 
                   shiny::plotOutput(ns("district_bars"),
                                     height = "500px",
@@ -105,26 +106,35 @@ mod_main_map_ui <- function(id){
            choices = indicator_listed_adm1,
 
            options = list(`live-search` = TRUE,
-                           `dropdown-align-right` = 'auto'),
+                           `dropdown-align-right` = 'auto',
+                          style =  "my-pickerinput" ),
            choicesOpt = list(
 
              style = rep_len("font-size: 90%; line-height: 1.6;", 30))
          ),
 
-         shiny::numericInput(ns("bins"),
-                             label = "Choose number of Bins",
-                             min = 3,
-                             max= 13,
-                             value = 5,
-                             step=1),
+         # shiny::numericInput(ns("bins"),
+         #                     label = "Choose number of Bins",
+         #                     min = 3,
+         #                     max= 13,
+         #                     value = 5,
+         #                     step=1),
 
          shinyWidgets::pickerInput(
            inputId = ns("polygon"),
            label = "Select Admin level: ",
            choices = c("Admin 1", "Admin 2"),
-          options = list(`dropdown-align-right` = 'auto'),
+          options = list(`dropdown-align-right` = 'auto',
+                         style =  "my-pickerinput" ),
            choicesOpt = list(style = rep_len("font-size: 90%; line-height: 1.6;", 30))
          ),
+
+         shiny::sliderInput(ns("bins"),
+                            label = "Choose number of Bins",
+                            min = 3,
+                            max= 13,
+                            value = 5,
+                            step=1),
          ),
        # shiny::verbatimTextOutput(ns("source_main_map")),
        # tags$head(tags$style("#main_maps_1-source_main_map {color:black; font-size:12px; font-style:italic;
@@ -441,8 +451,9 @@ mod_main_map_server <- function(id){
              # req(input$polygon == "Admin 1")
              adm2_data %>%
                filter(description == input$description) %>%
-               mutate(ADM2_NAME = fct_reorder(factor(ADM2_NAME), value, .na_rm=FALSE)) %>%
-               filter(ADM1_NAME %in% tehsil)
+               filter(ADM1_NAME %in% tehsil) %>%
+               mutate(ADM2_NAME = fct_reorder(factor(ADM2_NAME), value, .na_rm=FALSE))
+
 
        output$district_bars <- renderPlot({
            chart_data %>%

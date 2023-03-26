@@ -41,6 +41,11 @@ app_ui <- function(request) {
         shiny::tabPanel(
           "COMPARISON MAPS",
           mod_comp_maps_ui("comp_maps_1")
+        ),
+
+        shiny::tabPanel(
+          "SCATTER",
+          mod_scatter_ui("scatter_1")
         )
 
     )

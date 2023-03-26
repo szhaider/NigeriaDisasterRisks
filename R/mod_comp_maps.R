@@ -21,66 +21,72 @@ mod_comp_maps_ui <- function(id){
                  column(width = 6,
                         offset = 0,
 
-                       tags$style(type = "text/css", "#comp_maps-double_map_1 {height: calc(100vh - 100px) !important;
-                       position: relative;
-                       margin-left: -60px;
-                        margin-right: -60px;
-                       margin-top: 0px;
-                       margin-bottom: -40px;
-                       padding-left: -50px;
-                      padding-right: -50px;}"),
-                       leafletOutput(ns("double_map_1"),
-                                     height = "570px",
-                                     width = "620px"),
+
+                        tags$style(type = 'text/css', '#comp_maps_1-double_map_1 {height: calc(100vh - 100px) !important;}',
+                        'padding-bottom:0px;
+                                       padding-left:-20px;
+                                       padding-right:-20px;
+                                       margin-left:-20px;
+                                        margin-right:-20px;
+                                       position: relative;',),
+                      leafletOutput(ns("double_map_1"),
+                                    width = "100%", height = "400px"
+                                    ),
 
                             shiny::absolutePanel(
                             id = "controls", class = "panel panel-default", fixed= TRUE,
-                            draggable = FALSE, bottom = "auto", left = "auto", right = 650, top = 60,
+                            draggable = FALSE, bottom = "auto", left = "auto", right = 700, top = 60,
                             width = 300, height = "auto",
+
+                             # tags$style(".my-pickerinput {font-size: 70%; line-height: 1;}"), ###
 
                             shinyWidgets::pickerInput(
                               inputId = ns("description_comp1"),
                               label = "Select a Variable: ",
                               choices = indicator_listed_adm1,
                               options = list(`live-search` = TRUE,
-                                             `dropdown-align-right` = 'auto'),
+                                             `dropdown-align-right` = 'auto',
+                                             style = "my-pickerinput"   ####
+                                             ),
+
                               choicesOpt = list(style = rep_len("font-size: 70%; line-height: 1;", 30))
                             ),
-
-                            shiny::numericInput(ns("bins_comp1"),
-                                                label = "Choose number of Bins",
-                                                min = 3,
-                                                max= 13,
-                                                value = 5,
-                                                step=1),
 
                             shinyWidgets::pickerInput(
                               inputId = ns("polygon_comp1"),
                               label = "Select Admin level: ",
                               choices = c("Admin 1", "Admin 2"),
-                              options = list(`dropdown-align-right` = 'auto'),
-                              choicesOpt = list(style = rep_len("font-size: 80%; line-height: 1;", 30))
+                              options = list(`dropdown-align-right` = 'auto',
+                                             style = "my-pickerinput"),
+                              choicesOpt = list(style = rep_len("font-size: 80%; line-height: 1;", 2))
                             ),
+
+                            shiny::sliderInput(ns("bins_comp1"),
+                                               label = "Choose number of Bins",
+                                               min = 3,
+                                               max= 10,
+                                               value = 5,
+                                               step=1),
+
 
 
                    )),
                    column(width = 6,
                           offset = 0,
 
-                      tags$style(type = "text/css", "#comp_maps-double_map_2 {height: calc(100vh - 100px) !important;
-                       position: relative;
-                       margin-left: -40px;
-                       margin-right: -40px;
-                       margin-top: 0px;
-                       margin-bottom: -40px;
-                        padding-left: -50px;}"),
+
+                          tags$style(type = 'text/css', '#comp_maps_1-double_map_2 {height: calc(100vh - 100px) !important;}',
+                                     'padding-bottom:0px;
+                                       padding-left:0px;
+                                       padding-right:-10px;
+                                       margin-left:-10px;
+                                       position: relative;'),
                        leaflet::leafletOutput(ns("double_map_2"),
-                                              height = "570px",
-                                              width = "620px"),
+                                              width = "100%", height = "400px"),
 
                           shiny::absolutePanel(
                             id = "controls", class = "panel panel-default", fixed= TRUE,
-                            draggable = FALSE, bottom = "auto", left = "auto", right = 5, top = 60,
+                            draggable = FALSE, bottom = "auto", left = "auto", right = 80, top = 60,
                             width = 300, height = "auto",
 
                             shinyWidgets::pickerInput(
@@ -89,26 +95,27 @@ mod_comp_maps_ui <- function(id){
                               choices = indicator_listed_adm1,
 
                               options = list(`live-search` = TRUE,
-                                             `dropdown-align-right` = 'auto'),
+                                             `dropdown-align-right` = 'auto',
+                                             style = "my-pickerinput" ),
                               choicesOpt = list(
 
                               style = rep_len("font-size: 70%; line-height: 1;", 30))
                             ),
-
-                            shiny::numericInput(ns("bins_comp2"),
-                                                label = "Choose number of Bins",
-                                                min = 3,
-                                                max= 13,
-                                                value = 5,
-                                                step=1),
-
-                              shinyWidgets::pickerInput(
+                            shinyWidgets::pickerInput(
                               inputId = ns("polygon_comp2"),
                               label = "Select Admin level: ",
                               choices = c("Admin 1", "Admin 2"),
-                              options = list(`dropdown-align-right` = 'auto'),
-                              choicesOpt = list(style = rep_len("font-size: 80%; line-height: 1;", 30))
-                            )
+                              options = list(`dropdown-align-right` = 'auto',
+                                             style = "my-pickerinput" ),
+                              choicesOpt = list(style = rep_len("font-size: 80%; line-height: 1;", 2))
+                            ),
+
+                            shiny::sliderInput(ns("bins_comp2"),
+                                               label = "Choose number of Bins",
+                                               min = 3,
+                                               max= 10,
+                                               value = 5,
+                                               step=1)
                           )
 
                    )
@@ -198,8 +205,8 @@ mod_comp_maps_server <- function(id){
     output$double_map_1 <- leaflet::renderLeaflet({
       leaflet::leaflet(options = leaflet::leafletOptions(zoomSnap = 0.20, zoomDelta = 0.20)) %>%
         leaflet::addProviderTiles(provider =  "CartoDB.Voyager") %>%
-        leaflet::fitBounds(country_bounds[[1]], country_bounds[[2]], country_bounds[[3]], country_bounds[[4]]) %>%
-        leaflet::setView(lng=10.5, lat = 9.5, zoom = 4) %>%
+        # leaflet::fitBounds(country_bounds[[1]], country_bounds[[2]], country_bounds[[3]], country_bounds[[4]]) %>%
+        leaflet::setView(lng=12, lat = 10, zoom = 4.8) %>%
         leaflet.minicharts::syncWith("combined_map")
     })
 
@@ -286,7 +293,7 @@ mod_comp_maps_server <- function(id){
 
       leaflet::leafletProxy("double_map_1", data= map_data_comp1()) %>%
         leaflet::clearControls() %>%
-        leaflet::addLegend("bottomleft",
+        leaflet::addLegend("bottomright",
                            pal= pal_leg_comp1(),
                            values= map_data_comp1()$value,
                            opacity= 1,
@@ -377,6 +384,9 @@ mod_comp_maps_server <- function(id){
       }
     })
 
+    # xmin      ymin      xmax      ymax
+    # 2.668534  4.273007 14.678816 13.894419
+    #
 
     #Bounds
     country_bounds <-   nig_shp_adm0 %>% sf::st_bbox()
@@ -385,8 +395,8 @@ mod_comp_maps_server <- function(id){
     output$double_map_2 <- leaflet::renderLeaflet({
       leaflet::leaflet(options = leaflet::leafletOptions(zoomSnap = 0.20, zoomDelta = 0.20)) %>%
         leaflet::addProviderTiles(provider =  "CartoDB.Voyager") %>%
-        leaflet::fitBounds(country_bounds[[1]], country_bounds[[2]], country_bounds[[3]], country_bounds[[4]]) %>%
-        leaflet::setView(lng=10, lat = 9, zoom = 4) %>%
+        # leaflet::fitBounds(country_bounds[[1]], country_bounds[[2]], country_bounds[[3]], country_bounds[[4]]) %>%
+        leaflet::setView(lng=12, lat = 10, zoom = 4.8) %>%
         leaflet.minicharts::syncWith("combined_map")
     })
 
@@ -473,7 +483,7 @@ mod_comp_maps_server <- function(id){
 
       leaflet::leafletProxy("double_map_2", data= map_data_comp2()) %>%
         leaflet::clearControls() %>%
-        leaflet::addLegend("bottomleft",
+        leaflet::addLegend("bottomright",
                            pal= pal_leg_comp2(),
                            values= map_data_comp2()$value,
                            opacity= 1,
