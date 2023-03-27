@@ -23,12 +23,15 @@ Imports:
     leaflet.minicharts,
     magrittr,
     pkgload,
+    purrr,
+    recipes,
     rlang,
     rstudioapi,
     sf,
     shiny (>= 1.7.4),
     shinyscreenshot,
     shinyWidgets,
+    stringr,
     waiter
 Encoding: UTF-8
 LazyData: true

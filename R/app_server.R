@@ -12,4 +12,6 @@ app_server <- function(input, output, session) {
   mod_comp_maps_server("comp_maps_1")
   #Scatters
   mod_scatter_server("scatter_1")
+  #PCA
+  mod_pca_indexing_server("pca_indexing_1")
 }

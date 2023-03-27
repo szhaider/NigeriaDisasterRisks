@@ -34,6 +34,11 @@ app_ui <- function(request) {
           mod_comp_maps_ui("comp_maps_1")
         ),
 
+        tabPanel(
+          "INDEXING",
+           mod_pca_indexing_ui("pca_indexing_1")
+        ),
+
         shiny::tabPanel(
           "SCATTER",
           mod_scatter_ui("scatter_1")

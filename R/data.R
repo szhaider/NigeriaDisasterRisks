@@ -17,13 +17,20 @@ nig_shp_adm1 <- sf::st_as_sf(nig_admins$adm1)
 
 nig_shp_adm2 <- sf::st_as_sf(nig_admins$adm2)
 
+#Bounds
+country_bounds <-   nig_shp_adm0 %>% sf::st_bbox()
+
+
 ################################################################################
 #Wide data for admin 2
 wide_data <-
   adm2_data %>%
-    tidyr::pivot_wider(id_cols = c(ADM1_NAME, ADM2_NAME),
+    tidyr::pivot_wider(id_cols = c(ADM1_NAME, ADM2_NAME, ADM2_CODE),
                        names_from = description,
                        values_from = value)
+
+ADM2_CODES <- wide_data %>% dplyr::distinct(ADM2_NAME, ADM2_CODE) %>% dplyr::as_tibble()
+
 
 ################################################################################
 

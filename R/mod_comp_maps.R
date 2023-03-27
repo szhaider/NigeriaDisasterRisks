@@ -39,7 +39,7 @@ mod_comp_maps_ui <- function(id){
                             fixed= TRUE,
                             draggable = FALSE,
                             bottom = "auto",
-                            left = "auto", right = 715, top = 60,
+                            right = "auto", left = 6, top = 64,
                             width = 300, height = "auto",
 
                              # tags$style(".my-pickerinput {font-size: 70%; line-height: 1;}"), ###
@@ -93,7 +93,7 @@ mod_comp_maps_ui <- function(id){
                             id = "controls_panel",
                             class = "panel panel-default",
                             fixed= TRUE,
-                            draggable = FALSE, bottom = "auto", left = "auto", right = 10, top = 60,
+                            draggable = FALSE, bottom = "auto", left = "auto", right = 3, top = 64,
                             width = 300, height = "auto",
 
                             shinyWidgets::pickerInput(
@@ -214,7 +214,7 @@ mod_comp_maps_server <- function(id){
       leaflet::leaflet(options = leaflet::leafletOptions(zoomSnap = 0.20, zoomDelta = 0.20)) %>%
         leaflet::addProviderTiles(provider =  "CartoDB.Voyager") %>%
         # leaflet::fitBounds(country_bounds[[1]], country_bounds[[2]], country_bounds[[3]], country_bounds[[4]]) %>%
-        leaflet::setView(lng=12, lat = 10, zoom = 4.8) %>%
+        leaflet::setView(lng=11, lat = 13, zoom = 4.8) %>%
         leaflet.minicharts::syncWith("combined_map")
     })
 
@@ -405,7 +405,7 @@ mod_comp_maps_server <- function(id){
       leaflet::leaflet(options = leaflet::leafletOptions(zoomSnap = 0.20, zoomDelta = 0.20)) %>%
         leaflet::addProviderTiles(provider =  "CartoDB.Voyager") %>%
         # leaflet::fitBounds(country_bounds[[1]], country_bounds[[2]], country_bounds[[3]], country_bounds[[4]]) %>%
-        leaflet::setView(lng=12, lat = 10, zoom = 4.8) %>%
+        leaflet::setView(lng=11, lat = 13, zoom = 4.8) %>%
         leaflet.minicharts::syncWith("combined_map")
     })
 

@@ -8,12 +8,13 @@
          min-height: 25px;
         margin-bottom: 3px !important;
         margin-left: 2px !important;
+  /*background-color: #dddddd;*/
 
 }
 
 /*  absolute panel*/
  #controls_panel {
-              /*height: calc(45vh - 100px) !important;*/
+
              background-color: white;
              opacity: 0.9;
              padding: 5px 5px 5px 5px;
@@ -22,7 +23,11 @@
              box-shadow: 0pt 0pt 0pt 0px rgba(61,59,61,0.48);
              padding-bottom: 0mm;
              padding-top: 1mm;
-             z-index: 10000;
+             z-index: 99999;
+
+             font-size: 12px;
+
+
  }
 
 
@@ -36,7 +41,7 @@
 }
 
 .leaflet-tooltip {
-    max-width: 300px;
+    max-width: 310px;
     min-width: 200px;
     width: 250px;
     /* overflow-wrap: break-word; */
@@ -62,7 +67,12 @@
 }
 
 #sidebar-panel {
-  padding-top: 5px;
+  padding-top: 3px;
+  background-color: white;
+  margin-top: -15px;
+  margin-bottom:0px;
+
+  height: calc(100vh - 100px) !important;
 }
 
 
@@ -81,14 +91,32 @@
                          height: calc(105vh - 100px) !important;
                                        padding-bottom:0px;
                                        padding-left:0px;
-                                       padding-right:px;
+                                       padding-right:0px;
                                        margin-left: -13.5px;
                                        margin-right: 0px;
                                        position: relative;
 }
 
+#pca_indexing_1-pca_map {
+                            height: calc(100vh - 85px) !important;
+                                       padding-bottom:0px;
+                                       padding-left:0px;
+                                       padding-right:0px;
+                                       margin-left: -25px;
+                                       margin-right: 0px;
+                                       position: relative;
+}
 
+
+.leaflet-touch .leaflet-control-layers {
+  max-height: 250px !important;
+  overflow-y: scroll !important;
+}
 
 #scatter_1-scatterplot {
                         height: calc(100vh - 100px) !important;
+}
+
+#var_explained_pcs {
+                     height: calc(60vh - 50px) !important;
 }

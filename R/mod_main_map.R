@@ -27,11 +27,10 @@ mod_main_map_ui <- function(id){
       sidebarLayout(
                  sidebarPanel(
                    id = "sidebar-panel",
-
-                   width = 4,
-                   style = "background-color: white;
-                            margin-top: -20px;
-                            margin-bottom:0px;",
+                    width = 4,
+                   # style = "background-color: white;
+                   #          margin-top: -20px;
+                   #          margin-bottom:0px;",
                    # tags$strong(tags$em(tags$h6("Select the variables using the dropdown menu below for the maps"))),
                   # shiny::selectInput(ns("description"),
                   #                      "Select a Variable: ",
@@ -74,6 +73,7 @@ mod_main_map_ui <- function(id){
 
      ),
      shiny::mainPanel(
+       id = "main-page-panel",
        width = 8,
 
        leaflet::leafletOutput(ns("main_map"),
@@ -83,7 +83,7 @@ mod_main_map_ui <- function(id){
 
       shiny::absolutePanel(
          id = "controls_panel", class = "panel panel-default", fixed= TRUE,
-         draggable = FALSE, bottom = "auto", left = "auto", right = 5, top = 60,
+         draggable = FALSE, bottom = "auto", left = "auto", right = 3, top = 60,
          width = 300, height = "auto",
 
          shinyWidgets::pickerInput(
@@ -210,8 +210,8 @@ mod_main_map_server <- function(id){
     })
 
 
-#Bounds
-  country_bounds <-   nig_shp_adm0 %>% sf::st_bbox()
+# #Bounds
+#   country_bounds <-   nig_shp_adm0 %>% sf::st_bbox()
 
     #Lealfet static options
  output$main_map <- leaflet::renderLeaflet({
@@ -221,6 +221,7 @@ mod_main_map_server <- function(id){
      leaflet::fitBounds(country_bounds[[1]], country_bounds[[2]], country_bounds[[3]], country_bounds[[4]]) %>%
      leaflet::setView(lng=10, lat = 9, zoom = 4.8) #
     })
+
 
  #Need to check
  outputOptions(output, "main_map", suspendWhenHidden = FALSE, priority = 1000)
