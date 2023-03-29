@@ -52,10 +52,10 @@ mod_pca_indexing_ui <- function(id){
                                             "Download PCA (xlsx)",
                                             icon= icon("download"),
                                             class = "btn-sm")),
-        h6(actionLink(ns("pca_link_1"),
+        h6(actionLink(ns("pca_explained"),
                       "What are the PCA Scores?")),
-        h6(actionLink(ns("pca_link_2"),
-                      "How is the PCA constructed, and how should the score be interpreted?"))
+        h6(actionLink(ns("pca_interpret"),
+                      "How should the PCA scores be interpreted?"))
         ),
 
       shiny::mainPanel(
@@ -83,7 +83,7 @@ mod_pca_indexing_server <- function(id){
       leaflet::leaflet(options = leaflet::leafletOptions(zoomSnap = 0.20, zoomDelta = 0.20)) %>%
         leaflet::addProviderTiles(provider =  "CartoDB.Voyager", group = "CARTO") %>%
         leaflet::fitBounds(country_bounds[[1]], country_bounds[[2]], country_bounds[[3]], country_bounds[[4]]) %>%
-        leaflet::setView(lng=10, lat = 9, zoom = 5.5) #
+        leaflet::setView(lng=9.5, lat = 9, zoom = 6) #
     })
 
     outputOptions(output, "pca_map", suspendWhenHidden = FALSE, priority = 1000)
@@ -171,10 +171,10 @@ mod_pca_indexing_server <- function(id){
 
     #Labelling
     labels_pca_map <- reactive({
-      paste0(glue("<b>ADM2_NAME</b>: { nig_shp_adm2$ADM_NAME } </br>"), "\n",
+      paste0(glue("<b>ADM2_NAME</b>: { nig_shp_adm2$ADM_NAME } </br>"),
              glue("<b>Weighting scheme: </b> Principal Component Analysis (1)"), "<br/>",
-             glue("<b>PTI score:</b> "), "\n",
-             glue("{ round(map_data_pca()$PC1, 4)  }"), sep = "") %>%
+             glue("<b>PCA score:</b> { round(map_data_pca()$PC1, 4)  }"),sep= "") %>%
+             # glue("{ round(map_data_pca()$PC1, 4)  }"), sep = "") %>%
         lapply(htmltools::HTML)
     })
 
@@ -243,14 +243,14 @@ mod_pca_indexing_server <- function(id){
                              fillColor =  ~pal_pca()(map_data_pca()$PC1),
                              fillOpacity = 1,
                              stroke = TRUE,
-                             color= "white",
-                             weight = 1,
-                             opacity = 0.9,
+                             color= "#5C4033",
+                             weight = 1.5,
+                             opacity = 1,
                              fill = TRUE,
-                             dashArray = c(5,5),
-                             smoothFactor = 0.8,
+                             dashArray =  c(3,3),
+                             smoothFactor = 1,
                              highlightOptions = leaflet::highlightOptions(weight= 2.5,
-                                                                          color = "darkgrey",
+                                                                          color = "black",
                                                                           fillOpacity = 1,
                                                                           opacity= 1,
                                                                           bringToFront = TRUE),
@@ -342,6 +342,31 @@ mod_pca_indexing_server <- function(id){
 
     )
 
+
+
+################################################################################
+    #PCA Index
+    ##############################################.
+    #### Modal  ----
+    ###############################################.
+    shiny::observeEvent(input$pca_explained, {
+      shiny::showModal(modalDialog(
+        title = "What are the PCA scores?",
+        p("The PCA scores are calculated using Principal Component Analysis algorithm, to develop deeper insights into spatial variations based on user-selected criteria."),
+        p("The purpose of this exercise is to ensure that a data-driven methodology is used to inform geographic targeting instead of subjectively assigning weights to various variables."),
+        p("The user can choose any combination of given variables in the dataset to help prioritize/deprioritize admins at the lowest granularity in the country to optimize allocation of limited resources."),
+        size = "m", easyClose = TRUE, fade=FALSE,footer = modalButton("Close (Esc)")))
+    })
+
+
+    shiny::observeEvent(input$pca_interpret, {
+      shiny::showModal(modalDialog(
+        title = "How should the PCA scores be interpreted?",
+        p("The calculated PCA scores are shown on the map in terms of customizable qunatiles. For instance, when 5 bins are selected, each color-bin represents 20% of the data on the map."),
+        p("The top priroty admins are the ones with highest PCA scores based on user-selected variables."),
+        size = "m", easyClose = TRUE, fade=FALSE,footer = modalButton("Close (Esc)")))
+    })
+################################################################################
 
     })
 }

@@ -214,7 +214,7 @@ mod_comp_maps_server <- function(id){
       leaflet::leaflet(options = leaflet::leafletOptions(zoomSnap = 0.20, zoomDelta = 0.20)) %>%
         leaflet::addProviderTiles(provider =  "CartoDB.Voyager") %>%
         # leaflet::fitBounds(country_bounds[[1]], country_bounds[[2]], country_bounds[[3]], country_bounds[[4]]) %>%
-        leaflet::setView(lng=11, lat = 13, zoom = 4.8) %>%
+        leaflet::setView(lng=11, lat = 13, zoom = 5) %>%
         leaflet.minicharts::syncWith("combined_map")
     })
 
@@ -231,10 +231,20 @@ mod_comp_maps_server <- function(id){
         lapply(htmltools::HTML)
     })
 
-    #breaks defined
+    # breaks defined
+    # breaks_comp1 <- shiny::reactive({
+    #   stats::quantile(map_data_comp1()$value, seq(0, 1, 1 / (input$bins_comp1)), na.rm = TRUE) %>%
+    #     unique()
+    # })
+
     breaks_comp1 <- shiny::reactive({
+      if(input$polygon_comp1 == "Admin 2" & length(map_data_comp1()$value[which(map_data_comp1()$value == 0)]) > (length(map_data_comp1()$value)/10)){
+        stats::quantile(subset(map_data_comp1()$value, map_data_comp1()$value!=0), seq(0, 1, 1 / (input$bins_comp1)), na.rm = TRUE) %>%
+          unique()
+      }else{
       stats::quantile(map_data_comp1()$value, seq(0, 1, 1 / (input$bins_comp1)), na.rm = TRUE) %>%
         unique()
+      }
     })
 
     pal_new_comp1 <- shiny::reactive({
@@ -252,7 +262,8 @@ mod_comp_maps_server <- function(id){
 
     # Pal_legend
     pal_leg_comp1 <- shiny::reactive ({
-    leaflet::colorBin(palette = pal_new_comp1(),
+    leaflet::colorBin(
+                        palette = pal_new_comp1(),
                         bins = breaks_comp1(),
                         na.color = "grey",
                         domain = map_data_comp1()[,"value"],
@@ -285,8 +296,8 @@ mod_comp_maps_server <- function(id){
           fillColor =  ~pal_comp1()(map_data_comp1()$value),
           fillOpacity = 1,
           stroke = TRUE,
-          color= "white",
-          weight = 1,
+          color= if(input$polygon_comp1 == "Admin 1"){"#5C4033"} else{"white"},
+          weight = if(input$polygon_comp1 == "Admin 1"){1.4} else{0.8},
           opacity = 1,
           fill = TRUE,
           dashArray = c(3,3),
@@ -300,15 +311,28 @@ mod_comp_maps_server <- function(id){
           group = "Polygons")
 
 
+      # #appending darkgry for zeores
+
+      # if(any(map_data_comp1()$value==0)){
+      #   pal_new_comp1_updated <- reactive(append(pal_new_comp1(), "#5C4033"))
+      # }else{
+      #   pal_new_comp1_updated <- reactive(pal_leg_comp1())
+      # }
+
+
       leaflet::leafletProxy("double_map_1", data= map_data_comp1()) %>%
         leaflet::clearControls() %>%
-        leaflet::addLegend("bottomright",
-                           pal= pal_leg_comp1(),
+        leaflet::addLegend(
+                          title = "Legend",
+                          "bottomright",
+                           pal= pal_leg_comp1(),   #
                            values= map_data_comp1()$value,
                            opacity= 1,
                            labFormat = leaflet::labelFormat(
                              between = " : ",
                              digits = 2))
+
+
 
     })
 
@@ -405,7 +429,7 @@ mod_comp_maps_server <- function(id){
       leaflet::leaflet(options = leaflet::leafletOptions(zoomSnap = 0.20, zoomDelta = 0.20)) %>%
         leaflet::addProviderTiles(provider =  "CartoDB.Voyager") %>%
         # leaflet::fitBounds(country_bounds[[1]], country_bounds[[2]], country_bounds[[3]], country_bounds[[4]]) %>%
-        leaflet::setView(lng=11, lat = 13, zoom = 4.8) %>%
+        leaflet::setView(lng=11, lat = 13, zoom = 5) %>%
         leaflet.minicharts::syncWith("combined_map")
     })
 
@@ -423,9 +447,18 @@ mod_comp_maps_server <- function(id){
     })
 
     #breaks defined
+    # breaks_comp2 <- shiny::reactive({
+    #   stats::quantile(map_data_comp2()$value, seq(0, 1, 1 / (input$bins_comp2)), na.rm = TRUE) %>%
+    #     unique()
+    # })
     breaks_comp2 <- shiny::reactive({
-      stats::quantile(map_data_comp2()$value, seq(0, 1, 1 / (input$bins_comp2)), na.rm = TRUE) %>%
-        unique()
+      if(input$polygon_comp2 == "Admin 2" & length(map_data_comp2()$value[which(map_data_comp2()$value == 0)]) > (length(map_data_comp2()$value)/10)){
+        stats::quantile(subset(map_data_comp2()$value, map_data_comp2()$value!=0), seq(0, 1, 1 / (input$bins_comp2)), na.rm = TRUE) %>%
+          unique()
+      }else{
+        stats::quantile(map_data_comp2()$value, seq(0, 1, 1 / (input$bins_comp2)), na.rm = TRUE) %>%
+          unique()
+      }
     })
 
     pal_new_comp2 <- shiny::reactive({
@@ -476,8 +509,8 @@ mod_comp_maps_server <- function(id){
           fillColor =  ~pal_comp2()(map_data_comp2()$value),
           fillOpacity = 1,
           stroke = TRUE,
-          color= "white",
-          weight = 1,
+          color= if(input$polygon_comp2 == "Admin 1"){"#5C4033"} else{"white"},
+          weight = if(input$polygon_comp2 == "Admin 1"){1.4} else{0.8},
           opacity = 1,
           fill = TRUE,
           dashArray = c(3,3),
@@ -493,7 +526,9 @@ mod_comp_maps_server <- function(id){
 
       leaflet::leafletProxy("double_map_2", data= map_data_comp2()) %>%
         leaflet::clearControls() %>%
-        leaflet::addLegend("bottomright",
+        leaflet::addLegend(
+                          title = "Legend",
+                          "bottomright",
                            pal= pal_leg_comp2(),
                            values= map_data_comp2()$value,
                            opacity= 1,

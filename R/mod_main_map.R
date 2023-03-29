@@ -218,8 +218,8 @@ mod_main_map_server <- function(id){
       # message("rendering local map")
       leaflet::leaflet(options = leaflet::leafletOptions(zoomSnap = 0.20, zoomDelta = 0.20)) %>%
         leaflet::addProviderTiles(provider =  "CartoDB.Voyager") %>%
-     leaflet::fitBounds(country_bounds[[1]], country_bounds[[2]], country_bounds[[3]], country_bounds[[4]]) %>%
-     leaflet::setView(lng=10, lat = 9, zoom = 4.8) #
+     # leaflet::fitBounds(country_bounds[[1]], country_bounds[[2]], country_bounds[[3]], country_bounds[[4]]) %>%
+     leaflet::setView(lng=11.5, lat = 9, zoom = 5.4) #
     })
 
 
@@ -260,10 +260,19 @@ mod_main_map_server <- function(id){
     # })
 
     #breaks defined
+    # breaks <- shiny::reactive({
+    #   stats::quantile(map_data()$value, seq(0, 1, 1 / (input$bins)), na.rm = TRUE) %>%
+    #      unique()
+    #  })
     breaks <- shiny::reactive({
-      stats::quantile(map_data()$value, seq(0, 1, 1 / (input$bins)), na.rm = TRUE) %>%
-         unique()
-     })
+      if(input$polygon == "Admin 2" & length(map_data()$value[which(map_data()$value == 0)]) > (length(map_data()$value)/10)){
+        stats::quantile(subset(map_data()$value, map_data()$value!=0), seq(0, 1, 1 / (input$bins)), na.rm = TRUE) %>%
+          unique()
+      }else{
+        stats::quantile(map_data()$value, seq(0, 1, 1 / (input$bins)), na.rm = TRUE) %>%
+          unique()
+      }
+    })
 
 
     pal_new <- shiny::reactive({
@@ -335,8 +344,11 @@ mod_main_map_server <- function(id){
                              fillColor =  ~pal()(map_data()$value),
                              fillOpacity = 1,
                              stroke = TRUE,
-                             color= "white",
-                             weight = 1,
+                              color="#5C4033",
+                             weight = if(input$polygon == "Admin 1"){1.5} else{0.8},
+
+                             # color= if(input$polygon == "Admin 1"){"grey"} else{"white"},
+                             # weight = if(input$polygon == "Admin 1"){1.5} else{0.9},
                              opacity = 1,
                              fill = TRUE,
                              dashArray = c(3,3),
@@ -349,12 +361,25 @@ mod_main_map_server <- function(id){
                                                                           bringToFront = TRUE),
                              group = "Polygons")
 
+    # #appending darkgry for zeores
+
+    # if(input$polygon == "Admin 2" & any(map_data()$value==0)){
+    #   pal_updated <- reactive(append(pal_new(), "#5C4033"))
+    # }else{
+    #   pal_updated <- reactive(pal_new())
+    # }
+
+
 
       leaflet::leafletProxy("main_map", data= map_data()) %>%
         leaflet::clearControls() %>%
-        leaflet::addLegend("bottomleft",
-                           pal= pal_leg(),
+        leaflet::addLegend(
+                            title = "Legend",
+                           "bottomleft",
+                           pal= pal_leg(),  #
                            values= map_data()$value,
+                           # colors = pal_updated(),
+
                            # title =
                            #   if(unique(map_data()$units)!=""){
                            #     paste0("Indicator", " ","(", unique(map_data()$units), ")")
