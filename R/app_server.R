@@ -6,6 +6,13 @@
 #' @noRd
 app_server <- function(input, output, session) {
   # Your application server logic
+
+
+
+  # waiter::waiter_show()
+  # Sys.sleep(3)
+  # waiter::waiter_hide()
+
   #Main Maps
   mod_main_map_server("main_map_1")
   #Comparison Maps

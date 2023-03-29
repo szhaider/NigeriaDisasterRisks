@@ -21,6 +21,8 @@ mod_pca_indexing_ui <- function(id){
 
         tags$strong(tags$em(tags$h6("Select the features to compute the Geographic Targeting Index based on Principal Component Analysis (PC1)"))),
 
+        div(
+          class= "pca_vars",
          shinyWidgets::pickerInput(ns("features_selected"),
                                   "Select featues for PCA",
                                   choices =  indicator_listed_adm2,
@@ -30,42 +32,54 @@ mod_pca_indexing_ui <- function(id){
                                                     style =  "my-pickerinput" ,
                                                      size = 10,
                                   `actions-box` = TRUE),
-                                  multiple=TRUE),
+                                  multiple=TRUE)
+         ),
 
         br(),
 
+        div(class= "variance",
         shiny::plotOutput(ns("var_explained_pcs"),
                           height = "200px",
-                          width = '100%'),
+                          width = '100%')
+        ),
         br(),
 
+        div(class = "bins_pca",
         shiny::numericInput(ns("bins_pca"),
                      "Choose Number of Bins",
                      value = 5,
                      min=3,
                      max = 20,
-                     step = 1),
+                     step = 1)
+        ),
 
         # br(),
 
+        div(class= "pca_download",
         shiny::fluidRow(shiny::downloadLink(ns("pca_download"),
                                             "Download PCA (xlsx)",
                                             icon= icon("download"),
-                                            class = "btn-sm")),
+                                            class = "btn-sm"))
+                        ),
         h6(actionLink(ns("pca_explained"),
                       "What are the PCA Scores?")),
         h6(actionLink(ns("pca_interpret"),
-                      "How should the PCA scores be interpreted?"))
+                      "How should the PCA scores be interpreted?")),
+        br(),
+
+        shiny::actionButton(ns("guide_pca"), "Tour around PCA index!", class = "btn-success")
         ),
 
       shiny::mainPanel(
         id = "main-page-panel",
         width = 8,
 
+        div(class= "pca_map",
         leaflet::leafletOutput(ns("pca_map"),
                                width = "67vw"
             )
         )
+      )
       )
     )
 }
@@ -77,6 +91,14 @@ mod_pca_indexing_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
+
+    guided_tour_pca()$init()$start()
+
+    observeEvent(input$guide_pca,{
+
+    guided_tour_pca()$init()$start()
+
+    })
 
     #Lealfet static options
     output$pca_map <- leaflet::renderLeaflet({

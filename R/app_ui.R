@@ -3,18 +3,28 @@
 #' @param request Internal parameter for `{shiny}`.
 #'     DO NOT REMOVE.
 #' @import shiny
+#' @importFrom cicerone use_cicerone
 #' @noRd
 app_ui <- function(request) {
   tagList(
     # Leave this function for adding external resources
     golem_add_external_resources(),
 
+    # guided tour
+
+    # waiter::use_waiter(),
+    # waiter::spin_chasing_dots(),
+    # waiter::waiter_show_on_load(html = spin_loaders(10)),
     # Your application UI logic
     # fluidPage(
       # "NigeriaDisasterRisks",
     tagList(
       shiny::navbarPage(
         title = "NIGERIA CLIMATE RISKS",
+
+        header = list(cicerone::use_cicerone()),
+        id = "nav",
+
         # fluid = TRUE,
         # theme = shinythemes::shinytheme("journal"),  #This is nice
 
@@ -24,8 +34,10 @@ app_ui <- function(request) {
         #                          margin-bottom: 0px !important;
         #                          margin-left: 1px !important;}")),
 
+        # shiny::tabPanel("INTRO"),
         shiny::tabPanel(
          "INTERACTIVE MAPS",
+         # cicerone::use_cicerone(),
           mod_main_map_ui("main_map_1")
         ),
 

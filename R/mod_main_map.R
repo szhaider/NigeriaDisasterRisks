@@ -19,6 +19,7 @@
 #' @importFrom shinyWidgets pickerInput updatePickerInput
 #' @importFrom shinyscreenshot screenshot
 #' @importFrom  ggplot2 ggplot geom_col aes labs theme element_line element_blank
+#' @importFrom cicerone initialise cicerone
 #'
 mod_main_map_ui <- function(id){
   ns <- NS(id)
@@ -58,13 +59,16 @@ mod_main_map_ui <- function(id){
                   #                     step=1),
                   h5(tags$b(tags$em("Click on the map polygons to access the ranked variation within Admin 2"))),
 
+                  div(
+                    class = "plot_tour",
                   shiny::plotOutput(ns("district_bars"),
                                     # height = "300px",
                                     # width = '100%'),
+                  )
                   ),
                   # br(),
 
-
+                   shiny::actionButton(ns("guide"), "Guided App Tour!", class = "btn-success"),
 
                    # downloadButton(ns("mapdata"), "Data", class= "btn-sm"),
                    # actionButton(ns("screenshot"), "Image",class="btn-sm", icon=icon("camera")),
@@ -76,16 +80,21 @@ mod_main_map_ui <- function(id){
        id = "main-page-panel",
        width = 8,
 
+       div(
+       class = "leaf_main",
        leaflet::leafletOutput(ns("main_map"),
                               # height = '100vh',
                               width = "67vw"
-                              ),
+                              )
+       ),
 
       shiny::absolutePanel(
          id = "controls_panel", class = "panel panel-default", fixed= TRUE,
          draggable = FALSE, bottom = "auto", left = "auto", right = 3, top = 60,
          width = 300, height = "auto",
 
+         div(
+           class = "var_tour",
          shinyWidgets::pickerInput(
            inputId = ns("description"),
            label = "Select a Variable: ",
@@ -100,6 +109,7 @@ mod_main_map_ui <- function(id){
            choicesOpt = list(
 
              style = rep_len("font-size: 90%; line-height: 1.6;", 30))
+         )
          ),
 
          # shiny::numericInput(ns("bins"),
@@ -109,6 +119,8 @@ mod_main_map_ui <- function(id){
          #                     value = 5,
          #                     step=1),
 
+         div(
+           class = "admin_tour",
          shinyWidgets::pickerInput(
            inputId = ns("polygon"),
            label = "Select Admin level: ",
@@ -116,14 +128,18 @@ mod_main_map_ui <- function(id){
           options = list(`dropdown-align-right` = 'auto',
                          style =  "my-pickerinput" ),
            choicesOpt = list(style = rep_len("font-size: 90%; line-height: 1.6;", 30))
+         )
          ),
 
-         shiny::sliderInput(ns("bins"),
+        div(
+          class= "bin_tour",
+          shiny::sliderInput(ns("bins"),
                             label = "Choose number of Bins",
                             min = 3,
                             max= 13,
                             value = 5,
-                            step=1),
+                            step=1)
+          )
          ),
        # shiny::verbatimTextOutput(ns("source_main_map")),
        # tags$head(tags$style("#main_maps_1-source_main_map {color:black; font-size:12px; font-style:italic;
@@ -141,6 +157,20 @@ mod_main_map_ui <- function(id){
 mod_main_map_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
+
+
+    guided_tour()$init()$start()
+
+
+    observeEvent(input$guide, {
+      guided_tour()$init()$start()
+    })
+
+    # initialise then start the guide
+    # id <- 'district_bars'
+    # cicerone::initialise(id = id)
+    # #
+
 
     #Shapes
     shps <- shiny::reactive({
@@ -498,6 +528,8 @@ mod_main_map_server <- function(id){
 
     })
 
+
+
     # observe({
     #
     #   click_event <- input$map_shape_click
@@ -529,6 +561,8 @@ mod_main_map_server <- function(id){
     #       panel.border = element_blank())
     #     })
     # })
+
+
 
 
 
