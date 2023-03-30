@@ -120,7 +120,7 @@ mod_pca_indexing_server <- function(id){
 
       data_pca_updated <-
         wide_data %>%
-        dplyr::select(ADM2_NAME,
+        dplyr::select(
                       ADM2_CODE,
                       input$features_selected)
 
@@ -193,7 +193,7 @@ mod_pca_indexing_server <- function(id){
 
     #Labelling
     labels_pca_map <- reactive({
-      paste0(glue("<b>ADM2_NAME</b>: { nig_shp_adm2$ADM_NAME } </br>"),
+      paste0(glue("<b>Admin 2:</b>: { nig_shp_adm2$ADM_NAME } </br>"),
              glue("<b>Weighting scheme: </b> Principal Component Analysis (1)"), "<br/>",
              glue("<b>PCA score:</b> { round(map_data_pca()$PC1, 4)  }"),sep= "") %>%
              # glue("{ round(map_data_pca()$PC1, 4)  }"), sep = "") %>%
@@ -250,8 +250,8 @@ mod_pca_indexing_server <- function(id){
       leaflet::leafletProxy("pca_map",
                             data = nig_shp_adm2,
                             deferUntilFlush = TRUE) %>%
-        leaflet::removeControl("legend") %>%
-        leaflet::clearShapes() %>%
+        # leaflet::removeControl("legend") %>%
+        # leaflet::clearShapes() %>%
         leaflet::addPolygons(label= labels_pca_map(),
                              labelOptions = leaflet::labelOptions(
                                style = list("font-weight"= "normal",
@@ -298,7 +298,7 @@ mod_pca_indexing_server <- function(id){
 
       leaflet::leafletProxy("pca_map", data= map_data_pca()) %>%
 
-        leaflet::clearControls() %>%
+        # leaflet::clearControls() %>%
         leaflet::addLegend("bottomright",
 
                            values= map_data_pca()$PC1,
@@ -326,7 +326,7 @@ mod_pca_indexing_server <- function(id){
 
       sdev_id <- function(){
         pca_scores() %>%
-          dplyr::select(-ADM2_CODE, -ADM2_NAME) %>%
+          dplyr::select(-ADM2_CODE) %>%
           purrr::map_df(., purrr::possibly(var, NA_integer_)) %>%
           tidyr::pivot_longer(everything(), names_to = "component", values_to = "value") %>%
           # group_by(component) %>%

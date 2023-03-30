@@ -207,7 +207,7 @@ mod_comp_maps_server <- function(id){
 
 
     #Bounds
-    country_bounds <-   nig_shp_adm0 %>% sf::st_bbox()
+    # country_bounds <-   nig_shp_adm0 %>% sf::st_bbox()
 
     #Lealfet static options
     output$double_map_1 <- leaflet::renderLeaflet({
@@ -422,7 +422,7 @@ mod_comp_maps_server <- function(id){
     #
 
     #Bounds
-    country_bounds <-   nig_shp_adm0 %>% sf::st_bbox()
+    # country_bounds <-   nig_shp_adm0 %>% sf::st_bbox()
 
     #Lealfet static options
     output$double_map_2 <- leaflet::renderLeaflet({

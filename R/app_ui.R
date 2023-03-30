@@ -67,7 +67,7 @@ app_ui <- function(request) {
 #' resources inside the Shiny application.
 #'
 #' @import shiny
-#' @importFrom golem add_resource_path activate_js favicon bundle_resources
+#' @importFrom golem add_resource_path activate_js  bundle_resources
 #' @noRd
 golem_add_external_resources <- function() {
 
@@ -89,7 +89,7 @@ golem_add_external_resources <- function() {
   )
 
   tags$head(
-    favicon(),
+    # favicon(),
     bundle_resources(
       path = app_sys("app/www"),
       app_title = "NigeriaDisasterRisks"
