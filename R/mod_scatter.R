@@ -15,7 +15,7 @@ mod_scatter_ui <- function(id){
 
     sidebarLayout(
       sidebarPanel(
-        id = "controls_panel",
+        id = "controls_panel_scatter",
         width = 3,
         shinyWidgets::pickerInput(
           inputId = ns("description_1"),

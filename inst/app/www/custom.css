@@ -113,8 +113,12 @@
   overflow-y: scroll !important;
 }
 
+
+
+
 #scatter_1-scatterplot {
                         height: calc(100vh - 100px) !important;
+                        z-index: -99999;
 }
 
 #var_explained_pcs {
